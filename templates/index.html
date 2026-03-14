@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Adaptive Traffic Analysis Dashboard</title>
+    
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --primary-hover: #1d4ed8;
+            --background: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --border-color: #e2e8f0;
+        }
+
+        body { font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: var(--background); color: var(--text-main); margin: 0; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
+        .dashboard-container { background: var(--card-bg); max-width: 750px; width: 100%; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); overflow: hidden; }
+
+        .live-banner { background: #0f172a; color: white; padding: 24px; }
+        .live-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #334155; padding-bottom: 12px; margin-bottom: 20px; }
+        .live-header h2 { margin: 0; font-size: 1.4rem; color: #38bdf8; }
+        .live-time { font-weight: 600; color: #cbd5e1; display: flex; align-items: center; gap: 8px; }
+        
+        .live-dot { height: 10px; width: 10px; background-color: #ef4444; border-radius: 50%; display: inline-block; animation: blink 1.5s infinite ease-in-out; }
+        @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
+
+        .live-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; text-align: center; }
+        .live-stat p { margin: 0; font-size: 0.8rem; color: #94a3b8; text-transform: uppercase; }
+        .live-stat h4 { margin: 5px 0 0; font-size: 1.2rem; color: white; }
+        
+        .weather-box { background: rgba(255, 255, 255, 0.05); padding: 15px; border-radius: 8px; margin-top: 15px; border: 1px solid #334155; }
+        .weather-box .live-stat p { color: #38bdf8; font-weight: 600; }
+
+        #trafficMap { height: 250px; width: 100%; border-radius: 8px; margin-top: 15px; border: 1px solid #334155; z-index: 1; }
+
+        .pg-control { margin-top: 20px; background: #1e293b; padding: 15px; border-radius: 8px; border: 1px solid #334155; }
+        .pg-control select { width: 100%; padding: 10px; background: #0f172a; color: white; border: 1px solid #38bdf8; border-radius: 6px; font-size: 1rem; cursor: pointer; outline: none; }
+
+        /* NEW: Ride Comparison Styles */
+        .ride-comparator { margin-top: 15px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+        .ride-card { background: rgba(255,255,255,0.05); border: 1px solid #334155; border-radius: 8px; padding: 12px; text-align: center; display: flex; flex-direction: column; justify-content: space-between;}
+        .ride-card.cheapest { border-color: #10b981; background: rgba(16, 185, 129, 0.1); }
+        .ride-logo { font-size: 1.1rem; font-weight: 800; margin-bottom: 5px; }
+        .uber { color: #ffffff; } .ola { color: #84cc16; } .rapido { color: #facc15; }
+        .ride-price { font-size: 1.4rem; font-weight: 700; color: white; margin-bottom: 10px; }
+        .surge-badge { font-size: 0.7rem; background: #ef4444; color: white; padding: 2px 6px; border-radius: 4px; display: none; margin-bottom: 8px;}
+        .book-btn { padding: 8px; border-radius: 4px; text-decoration: none; font-size: 0.85rem; font-weight: 600; text-align: center; }
+        .btn-uber { background: white; color: black; } .btn-uber:hover { background: #e2e8f0; }
+        .btn-ola { background: #84cc16; color: black; } .btn-ola:hover { background: #65a30d; }
+        .btn-rapido { background: #facc15; color: black; } .btn-rapido:hover { background: #eab308; }
+
+        .header { background: #f1f5f9; padding: 20px; text-align: center; border-bottom: 1px solid var(--border-color); }
+        .header h3 { margin: 0; color: var(--text-main); }
+        .form-section { padding: 32px; }
+        .input-group { margin-bottom: 20px; }
+        label { display: block; font-size: 0.9rem; font-weight: 600; margin-bottom: 8px; }
+        input, select { width: 100%; padding: 12px; border: 1px solid var(--border-color); border-radius: 6px; box-sizing: border-box; font-size: 1rem; }
+        input:focus, select:focus { outline: none; border-color: var(--primary-color); box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1); }
+        button { width: 100%; background: var(--primary-color); color: white; border: none; padding: 14px; font-size: 1.05rem; font-weight: 600; border-radius: 6px; cursor: pointer; transition: background 0.2s; }
+        button:hover { background: var(--primary-hover); }
+
+        .result-section { padding: 32px; border-top: 1px solid var(--border-color); background: #f1f5f9; }
+        .result-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+        .result-card { background: white; padding: 20px; border-radius: 8px; border: 1px solid var(--border-color); text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+        .result-title { font-size: 0.85rem; color: var(--text-muted); text-transform: uppercase; margin-bottom: 8px; }
+        .result-value { font-size: 1.4rem; font-weight: 700; color: var(--primary-color); }
+    </style>
+</head>
+<body>
+
+    <div class="dashboard-container">
+        
+        <div class="live-banner">
+            <div class="live-header">
+                <h2>Student Mobility Dashboard</h2>
+                <div class="live-time"><span class="live-dot"></span> {{ live.time_str }}</div>
+            </div>
+            
+            <div class="live-grid" style="margin-bottom: 10px;">
+                <div class="live-stat"><p>Traffic Level</p><h4>{{ live.congestion }}</h4></div>
+                <div class="live-stat"><p>Risk Level</p><h4 style="color: {% if live.risk == 'Critical' %}#ef4444{% else %}white{% endif %};">{{ live.risk }}</h4></div>
+                <div class="live-stat"><p>Avg Speed</p><h4>{{ live.speed }} km/h</h4></div>
+            </div>
+
+            <div class="live-grid weather-box">
+                <div class="live-stat"><p>Local Temp</p><h4>{{ live.weather.temp }}</h4></div>
+                <div class="live-stat"><p>Condition</p><h4 id="weatherCond">{{ live.weather.condition }}</h4></div>
+                <div class="live-stat"><p>Real AQI</p><h4>{{ live.weather.real_aqi }}</h4></div>
+            </div>
+
+            <div class="pg-control" style="display: flex; gap: 15px; align-items: center;">
+                <div style="flex-grow: 1;">
+                    <label style="color: #cbd5e1; font-size: 0.85rem; margin-bottom: 5px; display: block;">Select Route (From PG to SIT):</label>
+                    <select id="pgSelector" onchange="updateMapRoute()">
+                        <option value="default">General Sus Gaon Center</option>
+                        <option value="stanza">Stanza Living Haifa House (Baner)</option>
+                        <option value="malatikunj">MALATIKUNJ PG (Sus Gaon)</option>
+                        <option value="express">Express PG (Sus Road)</option>
+                        <option value="vaishnavi">Vaishnavi PG (Pashan-Sus)</option>
+                    </select>
+                </div>
+                <div style="background: #0f172a; padding: 10px 15px; border-radius: 6px; border: 1px solid #38bdf8; text-align: center; min-width: 90px;">
+                    <div style="font-size: 0.70rem; color: #94a3b8; text-transform: uppercase; margin-bottom: 3px;">Est. Time</div>
+                    <div id="travelTimeDisplay" style="font-size: 1.3rem; font-weight: 800; color: white;">-- mins</div>
+                </div>
+            </div>
+
+            <div class="ride-comparator" id="rideEngine">
+                <div class="ride-card" id="cardRapido">
+                    <div>
+                        <div class="ride-logo rapido">Rapido Bike</div>
+                        <span class="surge-badge" id="surgeRapido">SURGE</span>
+                        <div class="ride-price" id="priceRapido">₹--</div>
+                    </div>
+                    <a href="#" class="book-btn btn-rapido" target="_blank">Book Bike</a>
+                </div>
+                <div class="ride-card" id="cardOla">
+                    <div>
+                        <div class="ride-logo ola">Ola Auto</div>
+                        <span class="surge-badge" id="surgeOla">SURGE</span>
+                        <div class="ride-price" id="priceOla">₹--</div>
+                    </div>
+                    <a href="#" class="book-btn btn-ola" id="linkOla" target="_blank">Book Auto</a>
+                </div>
+                <div class="ride-card" id="cardUber">
+                    <div>
+                        <div class="ride-logo uber">Uber Go</div>
+                        <span class="surge-badge" id="surgeUber">SURGE</span>
+                        <div class="ride-price" id="priceUber">₹--</div>
+                    </div>
+                    <a href="#" class="book-btn btn-uber" id="linkUber" target="_blank">Book Cab</a>
+                </div>
+            </div>
+
+            <div id="trafficMap"></div>
+        </div>
+
+        <div class="header"><h3>Test Custom Scenarios</h3></div>
+        
+        <div class="form-section">
+            <form method="POST">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <div class="input-group">
+                        <label>Time of Day (0-23)</label>
+                        <input type="number" name="hour" required min="0" max="23" placeholder="e.g., 18">
+                    </div>
+                    <div class="input-group">
+                        <label>Month (1-12)</label>
+                        <input type="number" name="month" required min="1" max="12" placeholder="e.g., 7">
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label>Day Type</label>
+                    <select name="is_weekday">
+                        <option value="1">Weekday (Mon - Fri)</option>
+                        <option value="0">Weekend (Sat - Sun)</option>
+                    </select>
+                </div>
+
+                <div class="input-group">
+                    <label>Route Condition</label>
+                    <select name="is_steep">
+                        <option value="0">General Route (Flatter Terrain)</option>
+                        <option value="1">Sunny's World to SIT (Steep Patch)</option>
+                    </select>
+                </div>
+
+                <div class="input-group">
+                    <label>Live Incident / Road Status</label>
+                    <select name="is_blocked" id="is_blocked_select" style="border-left: 4px solid #ef4444;">
+                        <option value="0">Normal (No Blockages)</option>
+                        <option value="1">SEVERE: Road Blocked / Accident Ahead</option>
+                    </select>
+                </div>
+
+                <button type="submit">Predict Scenario Outcome</button>
+            </form>
+        </div>
+
+        {% if scenario %}
+        <div class="result-section">
+            <h3 style="margin-top: 0; color: var(--text-main); margin-bottom: 20px;">Scenario Prediction</h3>
+            <div class="result-grid">
+                <div class="result-card"><div class="result-title">Traffic Volume</div><div class="result-value">{{ scenario.congestion }}</div></div>
+                <div class="result-card"><div class="result-title">Accident Risk</div><div class="result-value" style="color: {% if scenario.risk == 'Critical' %}#ef4444{% else %}var(--primary-color){% endif %};">{{ scenario.risk }}</div></div>
+                <div class="result-card"><div class="result-title">Average Speed</div><div class="result-value">{{ scenario.speed }} km/h</div></div>
+                <div class="result-card"><div class="result-title">Est. AQI (PM2.5)</div><div class="result-value">{{ scenario.aqi }}</div></div>
+            </div>
+        </div>
+        {% endif %}
+
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+        var activeSpeed = {% if scenario %}{{ scenario.speed }}{% else %}{{ live.speed }}{% endif %};
+        var activeCongestion = "{% if scenario %}{{ scenario.congestion }}{% else %}{{ live.congestion }}{% endif %}";
+        var isBlocked = "{% if scenario %}{{ request.form['is_blocked'] }}{% else %}0{% endif %}";
+        var condition = document.getElementById("weatherCond") ? document.getElementById("weatherCond").innerText : "";
+
+        var routeColor = "#10b981"; 
+        if (activeCongestion === "Medium") routeColor = "#f59e0b"; 
+        if (activeCongestion === "High") routeColor = "#ef4444"; 
+        if (isBlocked === "1") routeColor = "#7f1d1d"; 
+
+        var destCoords = [18.535, 73.725]; // SIT Lavale
+
+        var pgLocations = {
+            "default": { coords: [18.548, 73.744], name: "Sus Gaon Center" },
+            "stanza": { coords: [18.559, 73.786], name: "Stanza Living Haifa House" },
+            "malatikunj": { coords: [18.547, 73.745], name: "MALATIKUNJ PG" },
+            "express": { coords: [18.549, 73.748], name: "Express PG" },
+            "vaishnavi": { coords: [18.545, 73.750], name: "Vaishnavi PG" }
+        };
+
+        var map = L.map('trafficMap').setView([18.545, 73.735], 13);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '© OpenStreetMap' }).addTo(map);
+
+        var startMarker, destMarker, trafficRoute;
+
+        function updateMapRoute() {
+            var selectedPgKey = document.getElementById("pgSelector").value;
+            var startData = pgLocations[selectedPgKey];
+
+            if (startMarker) map.removeLayer(startMarker);
+            if (destMarker) map.removeLayer(destMarker);
+            if (trafficRoute) map.removeLayer(trafficRoute);
+
+            startMarker = L.marker(startData.coords).addTo(map).bindPopup("<b>Pickup</b><br>" + startData.name).openPopup();
+            destMarker = L.marker(destCoords).addTo(map).bindPopup("<b>Dropoff</b><br>SIT Lavale Campus");
+
+            var osrmUrl = `https://router.project-osrm.org/route/v1/driving/${startData.coords[1]},${startData.coords[0]};${destCoords[1]},${destCoords[0]}?overview=full&geometries=geojson`;
+
+            fetch(osrmUrl)
+                .then(response => response.json())
+                .then(data => {
+                    var routeGeoJSON = data.routes[0].geometry;
+                    var actualDistanceKm = data.routes[0].distance / 1000;
+
+                    // --- TIME MATH ---
+                    var timeDisplay = document.getElementById("travelTimeDisplay");
+                    if (activeSpeed <= 2) {
+                        timeDisplay.innerText = "99+ mins"; timeDisplay.style.color = "#ef4444"; 
+                    } else {
+                        var timeInMins = Math.round((actualDistanceKm / activeSpeed) * 60);
+                        timeDisplay.innerText = timeInMins + " mins"; timeDisplay.style.color = "white"; 
+                    }
+
+                    // --- PRICE COMPARISON MATH (Tied to AI) ---
+                    // Base Rates per Km
+                    var baseRapido = 10;
+                    var baseOla = 15;
+                    var baseUber = 22;
+
+                    // AI Surge Pricing Logic
+                    var surgeMult = 1.0;
+                    var isSurge = false;
+                    
+                    if (activeCongestion === "High" || isBlocked === "1") { surgeMult = 1.8; isSurge = true; }
+                    else if (activeCongestion === "Medium") { surgeMult = 1.3; isSurge = true; }
+                    
+                    // Rain adds an extra 1.2x multiplier to the surge!
+                    if (condition.includes("Rain") || condition.includes("Thunder")) { surgeMult *= 1.2; isSurge = true; }
+
+                    var pRapido = Math.round(actualDistanceKm * baseRapido * surgeMult);
+                    var pOla = Math.round(actualDistanceKm * baseOla * surgeMult);
+                    var pUber = Math.round(actualDistanceKm * baseUber * surgeMult);
+
+                    // Update DOM
+                    document.getElementById("priceRapido").innerText = "₹" + pRapido;
+                    document.getElementById("priceOla").innerText = "₹" + pOla;
+                    document.getElementById("priceUber").innerText = "₹" + pUber;
+
+                    // Toggle Surge Badges
+                    document.getElementById("surgeRapido").style.display = isSurge ? "inline-block" : "none";
+                    document.getElementById("surgeOla").style.display = isSurge ? "inline-block" : "none";
+                    document.getElementById("surgeUber").style.display = isSurge ? "inline-block" : "none";
+
+                    // Highlight Cheapest (Usually Rapido)
+                    document.getElementById("cardRapido").classList.add("cheapest");
+
+                    // --- DEEP LINKS GENERATION ---
+                    var sLat = startData.coords[0]; var sLon = startData.coords[1];
+                    var dLat = destCoords[0]; var dLon = destCoords[1];
+
+                    // Uber Universal Link
+                    document.getElementById("linkUber").href = `https://m.uber.com/ul/?action=setPickup&client_id=my_client_id&pickup[latitude]=${sLat}&pickup[longitude]=${sLon}&dropoff[latitude]=${dLat}&dropoff[longitude]=${dLon}`;
+                    
+                    // Ola Web Link (Ola deep links are restricted, web works best)
+                    document.getElementById("linkOla").href = `https://book.olacabs.com/?lat=${sLat}&lng=${sLon}&drop_lat=${dLat}&drop_lng=${dLon}`;
+
+                    // Draw Map
+                    trafficRoute = L.geoJSON(routeGeoJSON, { style: { color: routeColor, weight: 6, opacity: 0.9, lineCap: 'round' } }).addTo(map);
+                    map.fitBounds(trafficRoute.getBounds(), {padding: [20, 20]});
+                });
+        }
+
+        updateMapRoute();
+    </script>
+</body>
+</html>
