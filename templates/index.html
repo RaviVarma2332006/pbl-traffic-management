@@ -57,7 +57,7 @@
     <div class="dashboard-container">
         <div class="live-banner">
             <div class="live-header">
-                <h2>Regional Mobility Dashboard</h2>
+                <h2>Master Regional Dashboard</h2>
                 <div class="live-time"><span class="live-dot"></span> {{ live.time_str }}</div>
             </div>
             
@@ -77,6 +77,13 @@
                 <div style="flex-grow: 1;">
                     <label style="color: #cbd5e1; font-size: 0.85rem; margin-bottom: 5px; display: block;">Select Accommodation (To SIT):</label>
                     <select id="pgSelector" onchange="updateMapRoute()">
+                        <optgroup label="Pashan & Sutarwadi PGs">
+                            <option value="santosh">SANTOSH PG ACCOMMODATION</option>
+                            <option value="suman">Suman PG for Girls / CDAC</option>
+                            <option value="kushal">Kushal PG</option>
+                            <option value="atharva">Atharva PG</option>
+                            <option value="skpg">SK's PG</option>
+                        </optgroup>
                         <optgroup label="Lavale Village & Nande PGs">
                             <option value="nova">Nova Living (Nande/Lavale)</option>
                             <option value="hillview">Hill View Girls Hostel (Lavale)</option>
@@ -137,6 +144,7 @@
                         <option value="0">Sus / Baner Corridor</option>
                         <option value="1">Lavale Village (High Traffic Zone)</option>
                         <option value="2">Nande Route (Bypass)</option>
+                        <option value="3">Pashan / Sutarwadi Gateway</option>
                     </select>
                 </div>
 
@@ -198,18 +206,28 @@
         var destCoords = [18.535, 73.725]; 
 
         var pgLocations = {
+            // Pashan / Sutarwadi PGs
+            "santosh": { coords: [18.544, 73.785], name: "SANTOSH PG ACCOMMODATION" },
+            "suman": { coords: [18.542, 73.780], name: "Suman PG for Girls" },
+            "kushal": { coords: [18.546, 73.788], name: "Kushal PG" },
+            "atharva": { coords: [18.540, 73.782], name: "Atharva PG" },
+            "skpg": { coords: [18.543, 73.787], name: "SK's PG" },
+            
+            // Lavale & Nande PGs
             "nova": { coords: [18.540, 73.720], name: "Nova Living" },
             "hillview": { coords: [18.538, 73.730], name: "Hill View Girls Hostel" },
             "magnolia": { coords: [18.542, 73.715], name: "Magnolia Girls Hostel" },
             "palladium": { coords: [18.535, 73.733], name: "The Palladium Premium PG" },
             "ssr": { coords: [18.545, 73.710], name: "SSR PG Gents and Ladies" },
+            
+            // Sus & Baner PGs
             "stanza": { coords: [18.559, 73.786], name: "Stanza Living Haifa House" },
             "malatikunj": { coords: [18.547, 73.745], name: "MALATIKUNJ PG" },
             "express": { coords: [18.549, 73.748], name: "Express PG" },
             "vaishnavi": { coords: [18.545, 73.750], name: "Vaishnavi PG" }
         };
 
-        var map = L.map('trafficMap').setView([18.540, 73.725], 14);
+        var map = L.map('trafficMap').setView([18.540, 73.750], 13);
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '© OpenStreetMap' }).addTo(map);
 
         var startMarker, destMarker, trafficRoute;
