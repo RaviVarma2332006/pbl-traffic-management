@@ -22,9 +22,10 @@
         .live-stat h4 { margin: 5px 0 0; font-size: 1.2rem; color: white; }
         .weather-box { background: rgba(255, 255, 255, 0.05); padding: 15px; border-radius: 8px; margin-top: 15px; border: 1px solid #334155; }
         .weather-box .live-stat p { color: #38bdf8; font-weight: 600; }
-        #trafficMap { height: 250px; width: 100%; border-radius: 8px; margin-top: 15px; border: 1px solid #334155; z-index: 1; }
+        #trafficMap { height: 300px; width: 100%; border-radius: 8px; margin-top: 20px; border: 1px solid #334155; z-index: 1; }
         .pg-control { margin-top: 20px; background: #1e293b; padding: 15px; border-radius: 8px; border: 1px solid #334155; }
         .pg-control select { width: 100%; padding: 10px; background: #0f172a; color: white; border: 1px solid #38bdf8; border-radius: 6px; font-size: 1rem; cursor: pointer; outline: none; }
+        
         .ride-comparator { margin-top: 15px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
         .ride-card { background: rgba(255,255,255,0.05); border: 1px solid #334155; border-radius: 8px; padding: 12px; text-align: center; display: flex; flex-direction: column; justify-content: space-between;}
         .ride-card.cheapest { border-color: #10b981; background: rgba(16, 185, 129, 0.1); }
@@ -36,6 +37,24 @@
         .btn-uber { background: white; color: black; } .btn-uber:hover { background: #e2e8f0; }
         .btn-ola { background: #84cc16; color: black; } .btn-ola:hover { background: #65a30d; }
         .btn-rapido { background: #facc15; color: black; } .btn-rapido:hover { background: #eab308; }
+        
+        /* NEW: Dual-Column Amenities Radar Styles */
+        .amenities-container { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 20px; padding-top: 15px; border-top: 1px solid #334155;}
+        .amenity-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .amenity-header h3 { margin: 0; font-size: 0.95rem; color: #cbd5e1; }
+        .status-badge { font-size: 0.70rem; background: rgba(16, 185, 129, 0.2); color: #10b981; padding: 3px 8px; border-radius: 12px; }
+        .status-badge.health { background: rgba(244, 63, 94, 0.2); color: #f43f5e; }
+        .amenity-list { display: flex; flex-direction: column; gap: 8px; }
+        .amenity-card { background: #1e293b; border: 1px solid #475569; border-radius: 6px; padding: 10px; display: flex; justify-content: space-between; align-items: center;}
+        .a-info { display: flex; flex-direction: column; overflow: hidden; padding-right: 10px; }
+        .a-name { color: #38bdf8; font-weight: 700; font-size: 0.85rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .a-name.health { color: #f43f5e; }
+        .a-type { color: #94a3b8; font-size: 0.7rem; text-transform: uppercase; margin-top: 2px;}
+        .a-dist { color: #10b981; font-weight: 700; font-size: 0.8rem; white-space: nowrap; }
+        
+        /* Custom Map Pins */
+        .map-pin { font-size: 14px; text-align: center; line-height: 22px; background: #fff; border-radius: 50%; border: 2px solid #0f172a; box-shadow: 0 2px 4px rgba(0,0,0,0.5); width: 22px !important; height: 22px !important; }
+
         .header { background: #f1f5f9; padding: 20px; text-align: center; border-bottom: 1px solid var(--border-color); }
         .header h3 { margin: 0; color: var(--text-main); }
         .form-section { padding: 32px; }
@@ -79,7 +98,7 @@
                     <select id="pgSelector" onchange="updateMapRoute()">
                         <optgroup label="Pashan & Sutarwadi PGs">
                             <option value="santosh">SANTOSH PG ACCOMMODATION</option>
-                            <option value="suman">Suman PG for Girls / CDAC</option>
+                            <option value="suman">Suman PG for Girls</option>
                             <option value="kushal">Kushal PG</option>
                             <option value="atharva">Atharva PG</option>
                             <option value="skpg">SK's PG</option>
@@ -120,6 +139,23 @@
                 </div>
             </div>
 
+            <div class="amenities-container">
+                <div>
+                    <div class="amenity-header">
+                        <h3>🛒 Groceries</h3>
+                        <span id="groceryStatus" class="status-badge">Scanning...</span>
+                    </div>
+                    <div class="amenity-list" id="groceryList"></div>
+                </div>
+                <div>
+                    <div class="amenity-header">
+                        <h3>🏥 Healthcare</h3>
+                        <span id="healthStatus" class="status-badge health">Scanning...</span>
+                    </div>
+                    <div class="amenity-list" id="healthList"></div>
+                </div>
+            </div>
+
             <div id="trafficMap"></div>
         </div>
 
@@ -137,9 +173,8 @@
                         <input type="number" name="month" required min="1" max="12" placeholder="e.g., 7">
                     </div>
                 </div>
-
                 <div class="input-group">
-                    <label>Originating Region (New)</label>
+                    <label>Originating Region</label>
                     <select name="route_region">
                         <option value="0">Sus / Baner Corridor</option>
                         <option value="1">Lavale Village (High Traffic Zone)</option>
@@ -147,7 +182,6 @@
                         <option value="3">Pashan / Sutarwadi Gateway</option>
                     </select>
                 </div>
-
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
                     <div class="input-group">
                         <label>Day Type</label>
@@ -164,7 +198,6 @@
                         </select>
                     </div>
                 </div>
-
                 <div class="input-group">
                     <label>Live Incident Status</label>
                     <select name="is_blocked" id="is_blocked_select" style="border-left: 4px solid #ef4444;">
@@ -172,7 +205,6 @@
                         <option value="1">SEVERE: Road Blocked / Accident</option>
                     </select>
                 </div>
-
                 <button type="submit">Predict Regional Scenario</button>
             </form>
         </div>
@@ -188,7 +220,6 @@
             </div>
         </div>
         {% endif %}
-
     </div>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -206,21 +237,16 @@
         var destCoords = [18.535, 73.725]; 
 
         var pgLocations = {
-            // Pashan / Sutarwadi PGs
             "santosh": { coords: [18.544, 73.785], name: "SANTOSH PG ACCOMMODATION" },
             "suman": { coords: [18.542, 73.780], name: "Suman PG for Girls" },
             "kushal": { coords: [18.546, 73.788], name: "Kushal PG" },
             "atharva": { coords: [18.540, 73.782], name: "Atharva PG" },
             "skpg": { coords: [18.543, 73.787], name: "SK's PG" },
-            
-            // Lavale & Nande PGs
             "nova": { coords: [18.540, 73.720], name: "Nova Living" },
             "hillview": { coords: [18.538, 73.730], name: "Hill View Girls Hostel" },
             "magnolia": { coords: [18.542, 73.715], name: "Magnolia Girls Hostel" },
             "palladium": { coords: [18.535, 73.733], name: "The Palladium Premium PG" },
             "ssr": { coords: [18.545, 73.710], name: "SSR PG Gents and Ladies" },
-            
-            // Sus & Baner PGs
             "stanza": { coords: [18.559, 73.786], name: "Stanza Living Haifa House" },
             "malatikunj": { coords: [18.547, 73.745], name: "MALATIKUNJ PG" },
             "express": { coords: [18.549, 73.748], name: "Express PG" },
@@ -231,63 +257,112 @@
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '© OpenStreetMap' }).addTo(map);
 
         var startMarker, destMarker, trafficRoute;
+        var amenityMarkers = []; 
 
+        // Define the three custom Emoji Pins
+        var cartIcon = L.divIcon({ html: '🛒', className: 'map-pin', iconSize: [22, 22], iconAnchor: [11, 11] });
+        var healthIcon = L.divIcon({ html: '🏥', className: 'map-pin', iconSize: [22, 22], iconAnchor: [11, 11] });
+        var pharmaIcon = L.divIcon({ html: '💊', className: 'map-pin', iconSize: [22, 22], iconAnchor: [11, 11] });
+
+        // Function 1: Fetch Groceries
+        function fetchNearbyGroceries(lat, lon) {
+            document.getElementById('groceryStatus').innerText = "Scanning...";
+            document.getElementById('groceryList').innerHTML = "";
+            var url = "https://overpass-api.de/api/interpreter?data=" + encodeURIComponent(`[out:json];node(around:1500,${lat},${lon})[shop~"supermarket|convenience"];out 3;`);
+
+            fetch(url).then(res => res.json()).then(data => {
+                var stores = data.elements;
+                var container = document.getElementById('groceryList');
+                if(stores.length === 0) { document.getElementById('groceryStatus').innerText = "None nearby"; return; }
+                
+                document.getElementById('groceryStatus').innerText = stores.length + " found";
+                stores.forEach(store => {
+                    var dist = map.distance([lat, lon], [store.lat, store.lon]);
+                    var distText = dist < 1000 ? Math.round(dist) + " m" : (dist/1000).toFixed(1) + " km";
+                    var name = store.tags.name || "Local Mart";
+                    var type = store.tags.shop === "supermarket" ? "Supermarket" : "Convenience";
+
+                    var card = document.createElement('div'); card.className = "amenity-card";
+                    card.innerHTML = `<div class="a-info"><div class="a-name" title="${name}">${name}</div><div class="a-type">${type}</div></div><div class="a-dist">🚶 ${distText}</div>`;
+                    container.appendChild(card);
+
+                    amenityMarkers.push(L.marker([store.lat, store.lon], {icon: cartIcon}).addTo(map).bindPopup(`<b>${name}</b><br>${distText} away`));
+                });
+            }).catch(() => document.getElementById('groceryStatus').innerText = "Offline");
+        }
+
+        // Function 2: Fetch Healthcare
+        function fetchNearbyHealthcare(lat, lon) {
+            document.getElementById('healthStatus').innerText = "Scanning...";
+            document.getElementById('healthList').innerHTML = "";
+            var url = "https://overpass-api.de/api/interpreter?data=" + encodeURIComponent(`[out:json];node(around:1500,${lat},${lon})[amenity~"pharmacy|clinic|hospital|doctors"];out 3;`);
+
+            fetch(url).then(res => res.json()).then(data => {
+                var places = data.elements;
+                var container = document.getElementById('healthList');
+                if(places.length === 0) { document.getElementById('healthStatus').innerText = "None nearby"; return; }
+                
+                document.getElementById('healthStatus').innerText = places.length + " found";
+                places.forEach(place => {
+                    var dist = map.distance([lat, lon], [place.lat, place.lon]);
+                    var distText = dist < 1000 ? Math.round(dist) + " m" : (dist/1000).toFixed(1) + " km";
+                    var name = place.tags.name || "Local Facility";
+                    var isPharma = place.tags.amenity === "pharmacy";
+                    var type = isPharma ? "Pharmacy" : "Clinic/Hospital";
+                    
+                    var card = document.createElement('div'); card.className = "amenity-card";
+                    card.innerHTML = `<div class="a-info"><div class="a-name health" title="${name}">${name}</div><div class="a-type">${type}</div></div><div class="a-dist">🚶 ${distText}</div>`;
+                    container.appendChild(card);
+
+                    amenityMarkers.push(L.marker([place.lat, place.lon], {icon: isPharma ? pharmaIcon : healthIcon}).addTo(map).bindPopup(`<b>${name}</b><br>${distText} away`));
+                });
+            }).catch(() => document.getElementById('healthStatus').innerText = "Offline");
+        }
+
+        // Main Update Function
         function updateMapRoute() {
             var selectedPgKey = document.getElementById("pgSelector").value;
             var startData = pgLocations[selectedPgKey];
 
+            // Clear Old Map Data
             if (startMarker) map.removeLayer(startMarker);
             if (destMarker) map.removeLayer(destMarker);
             if (trafficRoute) map.removeLayer(trafficRoute);
+            amenityMarkers.forEach(m => map.removeLayer(m));
+            amenityMarkers = [];
 
             startMarker = L.marker(startData.coords).addTo(map).bindPopup("<b>Pickup</b><br>" + startData.name).openPopup();
             destMarker = L.marker(destCoords).addTo(map).bindPopup("<b>Dropoff</b><br>SIT Lavale Campus");
 
+            // Trigger Both Radars Simultaneously!
+            fetchNearbyGroceries(startData.coords[0], startData.coords[1]);
+            fetchNearbyHealthcare(startData.coords[0], startData.coords[1]);
+
             var osrmUrl = `https://router.project-osrm.org/route/v1/driving/${startData.coords[1]},${startData.coords[0]};${destCoords[1]},${destCoords[0]}?overview=full&geometries=geojson`;
 
-            fetch(osrmUrl)
-                .then(response => response.json())
-                .then(data => {
-                    var routeGeoJSON = data.routes[0].geometry;
-                    var actualDistanceKm = data.routes[0].distance / 1000;
+            fetch(osrmUrl).then(response => response.json()).then(data => {
+                var actualDistanceKm = data.routes[0].distance / 1000;
+                var timeDisplay = document.getElementById("travelTimeDisplay");
+                if (activeSpeed <= 2) { timeDisplay.innerText = "99+ mins"; timeDisplay.style.color = "#ef4444"; } 
+                else { timeDisplay.innerText = Math.round((actualDistanceKm / activeSpeed) * 60) + " mins"; timeDisplay.style.color = "white"; }
 
-                    var timeDisplay = document.getElementById("travelTimeDisplay");
-                    if (activeSpeed <= 2) {
-                        timeDisplay.innerText = "99+ mins"; timeDisplay.style.color = "#ef4444"; 
-                    } else {
-                        var timeInMins = Math.round((actualDistanceKm / activeSpeed) * 60);
-                        timeDisplay.innerText = timeInMins + " mins"; timeDisplay.style.color = "white"; 
-                    }
+                var surgeMult = (activeCongestion === "High" || isBlocked === "1") ? 1.8 : (activeCongestion === "Medium" ? 1.3 : 1.0);
+                if (condition.includes("Rain") || condition.includes("Thunder")) surgeMult *= 1.2;
 
-                    var baseRapido = 10, baseOla = 15, baseUber = 22;
-                    var surgeMult = 1.0, isSurge = false;
-                    
-                    if (activeCongestion === "High" || isBlocked === "1") { surgeMult = 1.8; isSurge = true; }
-                    else if (activeCongestion === "Medium") { surgeMult = 1.3; isSurge = true; }
-                    if (condition.includes("Rain") || condition.includes("Thunder")) { surgeMult *= 1.2; isSurge = true; }
+                document.getElementById("priceRapido").innerText = "₹" + Math.max(20, Math.round(actualDistanceKm * 10 * surgeMult));
+                document.getElementById("priceOla").innerText = "₹" + Math.max(40, Math.round(actualDistanceKm * 15 * surgeMult));
+                document.getElementById("priceUber").innerText = "₹" + Math.max(60, Math.round(actualDistanceKm * 22 * surgeMult));
 
-                    var pRapido = Math.max(20, Math.round(actualDistanceKm * baseRapido * surgeMult));
-                    var pOla = Math.max(40, Math.round(actualDistanceKm * baseOla * surgeMult));
-                    var pUber = Math.max(60, Math.round(actualDistanceKm * baseUber * surgeMult));
+                var isSurge = surgeMult > 1.0;
+                document.querySelectorAll('.surge-badge').forEach(b => b.style.display = isSurge ? "inline-block" : "none");
 
-                    document.getElementById("priceRapido").innerText = "₹" + pRapido;
-                    document.getElementById("priceOla").innerText = "₹" + pOla;
-                    document.getElementById("priceUber").innerText = "₹" + pUber;
+                var sLat = startData.coords[0], sLon = startData.coords[1], dLat = destCoords[0], dLon = destCoords[1];
+                document.getElementById("linkUber").href = `https://m.uber.com/ul/?action=setPickup&client_id=my_client_id&pickup[latitude]=${sLat}&pickup[longitude]=${sLon}&dropoff[latitude]=${dLat}&dropoff[longitude]=${dLon}`;
+                document.getElementById("linkOla").href = `https://book.olacabs.com/?lat=${sLat}&lng=${sLon}&drop_lat=${dLat}&drop_lng=${dLon}`;
 
-                    document.getElementById("surgeRapido").style.display = isSurge ? "inline-block" : "none";
-                    document.getElementById("surgeOla").style.display = isSurge ? "inline-block" : "none";
-                    document.getElementById("surgeUber").style.display = isSurge ? "inline-block" : "none";
-                    document.getElementById("cardRapido").classList.add("cheapest");
-
-                    var sLat = startData.coords[0]; var sLon = startData.coords[1];
-                    var dLat = destCoords[0]; var dLon = destCoords[1];
-
-                    document.getElementById("linkUber").href = `https://m.uber.com/ul/?action=setPickup&client_id=my_client_id&pickup[latitude]=${sLat}&pickup[longitude]=${sLon}&dropoff[latitude]=${dLat}&dropoff[longitude]=${dLon}`;
-                    document.getElementById("linkOla").href = `https://book.olacabs.com/?lat=${sLat}&lng=${sLon}&drop_lat=${dLat}&drop_lng=${dLon}`;
-
-                    trafficRoute = L.geoJSON(routeGeoJSON, { style: { color: routeColor, weight: 6, opacity: 0.9, lineCap: 'round' } }).addTo(map);
-                    map.fitBounds(trafficRoute.getBounds(), {padding: [20, 20]});
-                });
+                trafficRoute = L.geoJSON(data.routes[0].geometry, { style: { color: routeColor, weight: 6, opacity: 0.9, lineCap: 'round' } }).addTo(map);
+                setTimeout(() => { map.fitBounds(trafficRoute.getBounds(), {padding: [30, 30]}); }, 300);
+            });
         }
         updateMapRoute();
     </script>
