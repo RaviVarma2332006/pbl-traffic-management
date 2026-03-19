@@ -12,7 +12,6 @@
         body { font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: var(--background); color: var(--text-main); margin: 0; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
         .dashboard-container { background: var(--card-bg); max-width: 750px; width: 100%; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); overflow: hidden; }
         
-        /* Live Banner & Stats */
         .live-banner { background: #0f172a; color: white; padding: 24px; }
         .live-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #334155; padding-bottom: 12px; margin-bottom: 20px; }
         .live-header h2 { margin: 0; font-size: 1.4rem; color: #38bdf8; }
@@ -25,13 +24,11 @@
         .weather-box { background: rgba(255, 255, 255, 0.05); padding: 15px; border-radius: 8px; margin-top: 15px; border: 1px solid #334155; }
         .weather-box .live-stat p { color: #38bdf8; font-weight: 600; }
         
-        /* Selectors & Map */
         .pg-control { margin-top: 20px; background: #1e293b; padding: 15px; border-radius: 8px; border: 1px solid #334155; }
         .pg-control select { width: 100%; padding: 10px; background: #0f172a; color: white; border: 1px solid #38bdf8; border-radius: 6px; font-size: 1rem; cursor: pointer; outline: none; }
         #trafficMap { height: 320px; width: 100%; border-radius: 8px; margin-top: 20px; border: 1px solid #334155; z-index: 1; }
         .map-pin { font-size: 14px; text-align: center; line-height: 22px; background: #fff; border-radius: 50%; border: 2px solid #0f172a; box-shadow: 0 2px 4px rgba(0,0,0,0.5); width: 22px !important; height: 22px !important; }
 
-        /* Ride Engine */
         .ride-comparator { margin-top: 15px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
         .ride-card { background: rgba(255,255,255,0.05); border: 1px solid #334155; border-radius: 8px; padding: 12px; text-align: center; display: flex; flex-direction: column; justify-content: space-between;}
         .ride-card.cheapest { border-color: #10b981; background: rgba(16, 185, 129, 0.1); }
@@ -44,7 +41,6 @@
         .btn-ola { background: #84cc16; color: black; } .btn-ola:hover { background: #65a30d; }
         .btn-rapido { background: #facc15; color: black; } .btn-rapido:hover { background: #eab308; }
         
-        /* Carpool Matcher */
         .carpool-container { margin-top: 15px; background: rgba(16, 185, 129, 0.05); border: 1px dashed #10b981; border-radius: 8px; padding: 15px; }
         .carpool-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
         .carpool-header h3 { margin: 0; font-size: 1rem; color: #10b981; }
@@ -58,24 +54,26 @@
         .match-success { margin-top: 15px; padding: 12px; background: #0f172a; border-radius: 6px; color: #cbd5e1; font-size: 0.85rem; text-align: center; border-left: 4px solid #10b981; }
         @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
 
-        /* Amenities Radar */
         .amenities-container { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 15px; padding-top: 15px; border-top: 1px solid #334155;}
         .amenity-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
         .amenity-header h3 { margin: 0; font-size: 0.95rem; color: #cbd5e1; }
         .status-badge { font-size: 0.70rem; background: rgba(16, 185, 129, 0.2); color: #10b981; padding: 3px 8px; border-radius: 12px; }
         .status-badge.health { background: rgba(244, 63, 94, 0.2); color: #f43f5e; }
         .amenity-list { display: flex; flex-direction: column; gap: 8px; max-height: 180px; overflow-y: auto; padding-right: 5px; }
-        /* Scrollbar Styling for Amenities */
         .amenity-list::-webkit-scrollbar { width: 4px; }
         .amenity-list::-webkit-scrollbar-thumb { background: #475569; border-radius: 4px; }
-        .amenity-card { background: #1e293b; border: 1px solid #475569; border-radius: 6px; padding: 10px; display: flex; justify-content: space-between; align-items: center;}
+        
+        /* NEW: Hover effects to indicate cards are clickable */
+        .amenity-card { background: #1e293b; border: 1px solid #475569; border-radius: 6px; padding: 10px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: all 0.2s ease;}
+        .amenity-card:hover { background: #334155; transform: translateY(-2px); border-color: #38bdf8; }
+        .amenity-card.health-card:hover { border-color: #f43f5e; }
+        
         .a-info { display: flex; flex-direction: column; overflow: hidden; padding-right: 10px; }
         .a-name { color: #38bdf8; font-weight: 700; font-size: 0.85rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .a-name.health { color: #f43f5e; }
         .a-type { color: #94a3b8; font-size: 0.7rem; text-transform: uppercase; margin-top: 2px;}
         .a-dist { color: #10b981; font-weight: 700; font-size: 0.8rem; white-space: nowrap; }
 
-        /* Form & Scenarios */
         .header { background: #f1f5f9; padding: 20px; text-align: center; border-bottom: 1px solid var(--border-color); }
         .header h3 { margin: 0; color: var(--text-main); }
         .form-section { padding: 32px; }
@@ -276,21 +274,16 @@
         var destCoords = [18.535, 73.725]; // SIT Lavale
 
         var pgLocations = {
-            // Pashan / Sutarwadi PGs
             "santosh": { coords: [18.544, 73.785], name: "SANTOSH PG ACCOMMODATION" },
             "suman": { coords: [18.542, 73.780], name: "Suman PG for Girls" },
             "kushal": { coords: [18.546, 73.788], name: "Kushal PG" },
             "atharva": { coords: [18.540, 73.782], name: "Atharva PG" },
             "skpg": { coords: [18.543, 73.787], name: "SK's PG" },
-            
-            // Lavale & Nande PGs
             "nova": { coords: [18.540, 73.720], name: "Nova Living" },
             "hillview": { coords: [18.538, 73.730], name: "Hill View Girls Hostel" },
             "magnolia": { coords: [18.542, 73.715], name: "Magnolia Girls Hostel" },
             "palladium": { coords: [18.535, 73.733], name: "The Palladium Premium PG" },
             "ssr": { coords: [18.545, 73.710], name: "SSR PG Gents and Ladies" },
-            
-            // Sus & Baner PGs
             "stanza": { coords: [18.559, 73.786], name: "Stanza Living Haifa House" },
             "malatikunj": { coords: [18.547, 73.745], name: "MALATIKUNJ PG" },
             "express": { coords: [18.549, 73.748], name: "Express PG" },
@@ -303,8 +296,8 @@
 
         var startMarker, destMarker, trafficRoute;
         var amenityMarkers = []; 
+        var amenityRouteLayer = null; // NEW: Track the sub-route to the store/clinic
 
-        // Map Pins
         var cartIcon = L.divIcon({ html: '🛒', className: 'map-pin', iconSize: [22, 22], iconAnchor: [11, 11] });
         var healthIcon = L.divIcon({ html: '🏥', className: 'map-pin', iconSize: [22, 22], iconAnchor: [11, 11] });
         var pharmaIcon = L.divIcon({ html: '💊', className: 'map-pin', iconSize: [22, 22], iconAnchor: [11, 11] });
@@ -368,6 +361,38 @@
             }, 1500);
         }
 
+        // --- NEW: INTERACTIVE AMENITY ROUTING FUNCTION ---
+        function drawRouteToAmenity(destLat, destLon, isHealth) {
+            var selectedPgKey = document.getElementById("pgSelector").value;
+            var startData = pgLocations[selectedPgKey];
+            var startLat = startData.coords[0];
+            var startLon = startData.coords[1];
+
+            // Clear any previously drawn amenity route
+            if (amenityRouteLayer) {
+                map.removeLayer(amenityRouteLayer);
+            }
+
+            // Fetch the physical road path to the store/clinic
+            var osrmUrl = `https://router.project-osrm.org/route/v1/driving/${startLon},${startLat};${destLon},${destLat}?overview=full&geometries=geojson`;
+
+            fetch(osrmUrl)
+                .then(response => response.json())
+                .then(data => {
+                    var routeGeoJSON = data.routes[0].geometry;
+                    
+                    // Choose a distinct dashed color: Cyan for Groceries, Pink for Health
+                    var pathColor = isHealth ? "#f43f5e" : "#06b6d4";
+
+                    amenityRouteLayer = L.geoJSON(routeGeoJSON, { 
+                        style: { color: pathColor, weight: 5, opacity: 0.9, dashArray: '10, 10', lineCap: 'round' } 
+                    }).addTo(map);
+
+                    // Smoothly pull the camera to fit this new specific route
+                    map.fitBounds(amenityRouteLayer.getBounds(), {padding: [40, 40]});
+                });
+        }
+
         // --- AMENITIES RADAR FUNCTIONS ---
         function fetchNearbyGroceries(lat, lon) {
             document.getElementById('groceryStatus').innerText = "Scanning...";
@@ -386,11 +411,16 @@
                     var name = store.tags.name || "Local Mart";
                     var type = store.tags.shop === "supermarket" ? "Supermarket" : "Convenience";
 
-                    var card = document.createElement('div'); card.className = "amenity-card";
+                    var card = document.createElement('div'); 
+                    card.className = "amenity-card";
+                    // NEW: Add the onClick event to trigger the route drawing!
+                    card.onclick = () => drawRouteToAmenity(store.lat, store.lon, false);
                     card.innerHTML = `<div class="a-info"><div class="a-name" title="${name}">${name}</div><div class="a-type">${type}</div></div><div class="a-dist">🚶 ${distText}</div>`;
                     container.appendChild(card);
 
-                    amenityMarkers.push(L.marker([store.lat, store.lon], {icon: cartIcon}).addTo(map).bindPopup(`<b>${name}</b><br>${distText} away`));
+                    var m = L.marker([store.lat, store.lon], {icon: cartIcon}).addTo(map).bindPopup(`<b>${name}</b><br>${distText} away`);
+                    m.on('click', () => drawRouteToAmenity(store.lat, store.lon, false)); // Map pins are also clickable!
+                    amenityMarkers.push(m);
                 });
             }).catch(() => document.getElementById('groceryStatus').innerText = "Offline");
         }
@@ -413,11 +443,16 @@
                     var isPharma = place.tags.amenity === "pharmacy";
                     var type = isPharma ? "Pharmacy" : "Clinic/Hospital";
                     
-                    var card = document.createElement('div'); card.className = "amenity-card";
+                    var card = document.createElement('div'); 
+                    card.className = "amenity-card health-card";
+                    // NEW: Add the onClick event to trigger the route drawing!
+                    card.onclick = () => drawRouteToAmenity(place.lat, place.lon, true);
                     card.innerHTML = `<div class="a-info"><div class="a-name health" title="${name}">${name}</div><div class="a-type">${type}</div></div><div class="a-dist">🚶 ${distText}</div>`;
                     container.appendChild(card);
 
-                    amenityMarkers.push(L.marker([place.lat, place.lon], {icon: isPharma ? pharmaIcon : healthIcon}).addTo(map).bindPopup(`<b>${name}</b><br>${distText} away`));
+                    var m = L.marker([place.lat, place.lon], {icon: isPharma ? pharmaIcon : healthIcon}).addTo(map).bindPopup(`<b>${name}</b><br>${distText} away`);
+                    m.on('click', () => drawRouteToAmenity(place.lat, place.lon, true)); // Map pins are also clickable!
+                    amenityMarkers.push(m);
                 });
             }).catch(() => document.getElementById('healthStatus').innerText = "Offline");
         }
@@ -431,6 +466,7 @@
             if (startMarker) map.removeLayer(startMarker);
             if (destMarker) map.removeLayer(destMarker);
             if (trafficRoute) map.removeLayer(trafficRoute);
+            if (amenityRouteLayer) map.removeLayer(amenityRouteLayer); // Clear active amenity route
             amenityMarkers.forEach(m => map.removeLayer(m));
             amenityMarkers = [];
 
@@ -442,23 +478,20 @@
             fetchNearbyGroceries(startData.coords[0], startData.coords[1]);
             fetchNearbyHealthcare(startData.coords[0], startData.coords[1]);
 
-            // Fetch Route from OSRM
+            // Fetch Main Campus Route
             var osrmUrl = `https://router.project-osrm.org/route/v1/driving/${startData.coords[1]},${startData.coords[0]};${destCoords[1]},${destCoords[0]}?overview=full&geometries=geojson`;
 
             fetch(osrmUrl).then(response => response.json()).then(data => {
                 var actualDistanceKm = data.routes[0].distance / 1000;
                 
-                // 1. Calculate Est. Time
                 var timeDisplay = document.getElementById("travelTimeDisplay");
                 if (activeSpeed <= 2) { timeDisplay.innerText = "99+ mins"; timeDisplay.style.color = "#ef4444"; } 
                 else { timeDisplay.innerText = Math.round((actualDistanceKm / activeSpeed) * 60) + " mins"; timeDisplay.style.color = "white"; }
 
-                // 2. Calculate Ride Pricing (Surge Logic)
                 var surgeMult = (activeCongestion === "High" || isBlocked === "1") ? 1.8 : (activeCongestion === "Medium" ? 1.3 : 1.0);
                 if (condition.includes("Rain") || condition.includes("Thunder")) surgeMult *= 1.2;
 
                 var pUber = Math.max(60, Math.round(actualDistanceKm * 22 * surgeMult));
-                
                 document.getElementById("priceRapido").innerText = "₹" + Math.max(20, Math.round(actualDistanceKm * 10 * surgeMult));
                 document.getElementById("priceOla").innerText = "₹" + Math.max(40, Math.round(actualDistanceKm * 15 * surgeMult));
                 document.getElementById("priceUber").innerText = "₹" + pUber;
@@ -466,7 +499,6 @@
                 var isSurge = surgeMult > 1.0;
                 document.querySelectorAll('.surge-badge').forEach(b => b.style.display = isSurge ? "inline-block" : "none");
 
-                // 3. Update Carpool Matcher UI
                 var potentialRiders = Math.floor(Math.random() * 3) + 1; 
                 var totalPeople = potentialRiders + 1; 
                 var splitPrice = Math.round(pUber / totalPeople);
@@ -481,20 +513,16 @@
                 document.getElementById("matchBtn").innerText = "Find Co-Riders";
                 document.getElementById("matchBtn").disabled = false;
 
-                // 4. Update Deep Links
                 var sLat = startData.coords[0], sLon = startData.coords[1], dLat = destCoords[0], dLon = destCoords[1];
                 document.getElementById("linkUber").href = `https://m.uber.com/ul/?action=setPickup&client_id=my_client_id&pickup[latitude]=${sLat}&pickup[longitude]=${sLon}&dropoff[latitude]=${dLat}&dropoff[longitude]=${dLon}`;
                 document.getElementById("linkOla").href = `https://book.olacabs.com/?lat=${sLat}&lng=${sLon}&drop_lat=${dLat}&drop_lng=${dLon}`;
 
-                // 5. Draw the physical route line on map
                 trafficRoute = L.geoJSON(data.routes[0].geometry, { style: { color: routeColor, weight: 6, opacity: 0.9, lineCap: 'round' } }).addTo(map);
                 
-                // Allow a tiny delay so amenity pins load before zooming the camera
                 setTimeout(() => { map.fitBounds(trafficRoute.getBounds(), {padding: [30, 30]}); }, 300);
             });
         }
         
-        // Run immediately on page load
         updateMapRoute();
     </script>
 </body>
