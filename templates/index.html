@@ -11,6 +11,8 @@
         :root { --primary-color: #2563eb; --primary-hover: #1d4ed8; --background: #f8fafc; --card-bg: #ffffff; --text-main: #1e293b; --text-muted: #64748b; --border-color: #e2e8f0; }
         body { font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: var(--background); color: var(--text-main); margin: 0; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
         .dashboard-container { background: var(--card-bg); max-width: 750px; width: 100%; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); overflow: hidden; }
+        
+        /* Live Banner & Stats */
         .live-banner { background: #0f172a; color: white; padding: 24px; }
         .live-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #334155; padding-bottom: 12px; margin-bottom: 20px; }
         .live-header h2 { margin: 0; font-size: 1.4rem; color: #38bdf8; }
@@ -19,42 +21,61 @@
         @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
         .live-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; text-align: center; }
         .live-stat p { margin: 0; font-size: 0.8rem; color: #94a3b8; text-transform: uppercase; }
-        .live-stat h4 { margin: 5px 0 0; font-size: 1.2rem; color: white; }
+        .live-stat h4 { margin: 5px 0 0; font-size: 1.2rem; color: white; transition: color 0.3s; }
         .weather-box { background: rgba(255, 255, 255, 0.05); padding: 15px; border-radius: 8px; margin-top: 15px; border: 1px solid #334155; }
         .weather-box .live-stat p { color: #38bdf8; font-weight: 600; }
-        #trafficMap { height: 300px; width: 100%; border-radius: 8px; margin-top: 20px; border: 1px solid #334155; z-index: 1; }
+        
+        /* Selectors & Map */
         .pg-control { margin-top: 20px; background: #1e293b; padding: 15px; border-radius: 8px; border: 1px solid #334155; }
         .pg-control select { width: 100%; padding: 10px; background: #0f172a; color: white; border: 1px solid #38bdf8; border-radius: 6px; font-size: 1rem; cursor: pointer; outline: none; }
-        
+        #trafficMap { height: 320px; width: 100%; border-radius: 8px; margin-top: 20px; border: 1px solid #334155; z-index: 1; }
+        .map-pin { font-size: 14px; text-align: center; line-height: 22px; background: #fff; border-radius: 50%; border: 2px solid #0f172a; box-shadow: 0 2px 4px rgba(0,0,0,0.5); width: 22px !important; height: 22px !important; }
+
+        /* Ride Engine */
         .ride-comparator { margin-top: 15px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
         .ride-card { background: rgba(255,255,255,0.05); border: 1px solid #334155; border-radius: 8px; padding: 12px; text-align: center; display: flex; flex-direction: column; justify-content: space-between;}
         .ride-card.cheapest { border-color: #10b981; background: rgba(16, 185, 129, 0.1); }
         .ride-logo { font-size: 1.1rem; font-weight: 800; margin-bottom: 5px; }
         .uber { color: #ffffff; } .ola { color: #84cc16; } .rapido { color: #facc15; }
-        .ride-price { font-size: 1.4rem; font-weight: 700; color: white; margin-bottom: 10px; }
+        .ride-price { font-size: 1.4rem; font-weight: 700; color: white; margin-bottom: 10px; transition: all 0.3s; }
         .surge-badge { font-size: 0.7rem; background: #ef4444; color: white; padding: 2px 6px; border-radius: 4px; display: none; margin-bottom: 8px;}
         .book-btn { padding: 8px; border-radius: 4px; text-decoration: none; font-size: 0.85rem; font-weight: 600; text-align: center; }
         .btn-uber { background: white; color: black; } .btn-uber:hover { background: #e2e8f0; }
         .btn-ola { background: #84cc16; color: black; } .btn-ola:hover { background: #65a30d; }
         .btn-rapido { background: #facc15; color: black; } .btn-rapido:hover { background: #eab308; }
         
-        /* NEW: Dual-Column Amenities Radar Styles */
-        .amenities-container { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 20px; padding-top: 15px; border-top: 1px solid #334155;}
+        /* Carpool Matcher */
+        .carpool-container { margin-top: 15px; background: rgba(16, 185, 129, 0.05); border: 1px dashed #10b981; border-radius: 8px; padding: 15px; }
+        .carpool-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .carpool-header h3 { margin: 0; font-size: 1rem; color: #10b981; }
+        .co-rider-badge { background: #10b981; color: white; padding: 3px 8px; border-radius: 12px; font-size: 0.75rem; font-weight: bold; animation: pulse 2s infinite; }
+        .carpool-content { display: flex; justify-content: space-between; align-items: center; }
+        .split-details p { margin: 0; font-size: 0.8rem; color: #94a3b8; }
+        .split-price { margin: 5px 0 0 0; font-size: 1.5rem; color: white; }
+        .split-price span { font-size: 0.8rem; color: #94a3b8; font-weight: normal; }
+        .match-btn { background: #1e293b; color: white; border: 1px solid #334155; padding: 10px 20px; border-radius: 6px; font-weight: bold; cursor: pointer; transition: 0.2s; }
+        .match-btn:hover { background: #334155; }
+        .match-success { margin-top: 15px; padding: 12px; background: #0f172a; border-radius: 6px; color: #cbd5e1; font-size: 0.85rem; text-align: center; border-left: 4px solid #10b981; }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
+
+        /* Amenities Radar */
+        .amenities-container { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 15px; padding-top: 15px; border-top: 1px solid #334155;}
         .amenity-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
         .amenity-header h3 { margin: 0; font-size: 0.95rem; color: #cbd5e1; }
         .status-badge { font-size: 0.70rem; background: rgba(16, 185, 129, 0.2); color: #10b981; padding: 3px 8px; border-radius: 12px; }
         .status-badge.health { background: rgba(244, 63, 94, 0.2); color: #f43f5e; }
-        .amenity-list { display: flex; flex-direction: column; gap: 8px; }
+        .amenity-list { display: flex; flex-direction: column; gap: 8px; max-height: 180px; overflow-y: auto; padding-right: 5px; }
+        /* Scrollbar Styling for Amenities */
+        .amenity-list::-webkit-scrollbar { width: 4px; }
+        .amenity-list::-webkit-scrollbar-thumb { background: #475569; border-radius: 4px; }
         .amenity-card { background: #1e293b; border: 1px solid #475569; border-radius: 6px; padding: 10px; display: flex; justify-content: space-between; align-items: center;}
         .a-info { display: flex; flex-direction: column; overflow: hidden; padding-right: 10px; }
         .a-name { color: #38bdf8; font-weight: 700; font-size: 0.85rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .a-name.health { color: #f43f5e; }
         .a-type { color: #94a3b8; font-size: 0.7rem; text-transform: uppercase; margin-top: 2px;}
         .a-dist { color: #10b981; font-weight: 700; font-size: 0.8rem; white-space: nowrap; }
-        
-        /* Custom Map Pins */
-        .map-pin { font-size: 14px; text-align: center; line-height: 22px; background: #fff; border-radius: 50%; border: 2px solid #0f172a; box-shadow: 0 2px 4px rgba(0,0,0,0.5); width: 22px !important; height: 22px !important; }
 
+        /* Form & Scenarios */
         .header { background: #f1f5f9; padding: 20px; text-align: center; border-bottom: 1px solid var(--border-color); }
         .header h3 { margin: 0; color: var(--text-main); }
         .form-section { padding: 32px; }
@@ -74,22 +95,23 @@
 <body>
 
     <div class="dashboard-container">
+        
         <div class="live-banner">
             <div class="live-header">
                 <h2>Master Regional Dashboard</h2>
-                <div class="live-time"><span class="live-dot"></span> {{ live.time_str }}</div>
+                <div class="live-time" id="liveTimeBadge"><span class="live-dot"></span> {{ live.time_str }}</div>
             </div>
             
             <div class="live-grid" style="margin-bottom: 10px;">
-                <div class="live-stat"><p>Traffic Level</p><h4>{{ live.congestion }}</h4></div>
-                <div class="live-stat"><p>Risk Level</p><h4 style="color: {% if live.risk == 'Critical' %}#ef4444{% else %}white{% endif %};">{{ live.risk }}</h4></div>
-                <div class="live-stat"><p>Avg Speed</p><h4>{{ live.speed }} km/h</h4></div>
+                <div class="live-stat"><p>Traffic Level</p><h4 id="liveCongestion">{{ live.congestion }}</h4></div>
+                <div class="live-stat"><p>Risk Level</p><h4 id="liveRisk" style="color: {% if live.risk == 'Critical' %}#ef4444{% else %}white{% endif %};">{{ live.risk }}</h4></div>
+                <div class="live-stat"><p>Avg Speed</p><h4 id="liveSpeed">{{ live.speed }} km/h</h4></div>
             </div>
 
             <div class="live-grid weather-box">
-                <div class="live-stat"><p>Local Temp</p><h4>{{ live.weather.temp }}</h4></div>
+                <div class="live-stat"><p>Local Temp</p><h4 id="liveTemp">{{ live.weather.temp }}</h4></div>
                 <div class="live-stat"><p>Condition</p><h4 id="weatherCond">{{ live.weather.condition }}</h4></div>
-                <div class="live-stat"><p>Real AQI</p><h4>{{ live.weather.real_aqi }}</h4></div>
+                <div class="live-stat"><p>Real AQI</p><h4 id="liveAqi">{{ live.weather.real_aqi }}</h4></div>
             </div>
 
             <div class="pg-control" style="display: flex; gap: 15px; align-items: center;">
@@ -139,19 +161,28 @@
                 </div>
             </div>
 
+            <div class="carpool-container" id="carpoolModule" style="display: none;">
+                <div class="carpool-header">
+                    <h3>🤝 Campus Carpool Matcher</h3>
+                    <span class="co-rider-badge" id="coRiderCount">Searching...</span>
+                </div>
+                <div class="carpool-content">
+                    <div class="split-details">
+                        <p>Est. Cab Fare: <del id="origFare">₹0</del></p>
+                        <h4 class="split-price" id="splitFare">₹0 <span>/ person</span></h4>
+                    </div>
+                    <button class="match-btn" id="matchBtn" onclick="simulateMatch()">Find Co-Riders</button>
+                </div>
+                <div class="match-success" id="matchSuccess" style="display: none;"></div>
+            </div>
+
             <div class="amenities-container">
                 <div>
-                    <div class="amenity-header">
-                        <h3>🛒 Groceries</h3>
-                        <span id="groceryStatus" class="status-badge">Scanning...</span>
-                    </div>
+                    <div class="amenity-header"><h3>🛒 Groceries</h3><span id="groceryStatus" class="status-badge">Scanning...</span></div>
                     <div class="amenity-list" id="groceryList"></div>
                 </div>
                 <div>
-                    <div class="amenity-header">
-                        <h3>🏥 Healthcare</h3>
-                        <span id="healthStatus" class="status-badge health">Scanning...</span>
-                    </div>
+                    <div class="amenity-header"><h3>🏥 Healthcare</h3><span id="healthStatus" class="status-badge health">Scanning...</span></div>
                     <div class="amenity-list" id="healthList"></div>
                 </div>
             </div>
@@ -173,6 +204,7 @@
                         <input type="number" name="month" required min="1" max="12" placeholder="e.g., 7">
                     </div>
                 </div>
+
                 <div class="input-group">
                     <label>Originating Region</label>
                     <select name="route_region">
@@ -182,6 +214,7 @@
                         <option value="3">Pashan / Sutarwadi Gateway</option>
                     </select>
                 </div>
+
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
                     <div class="input-group">
                         <label>Day Type</label>
@@ -198,6 +231,7 @@
                         </select>
                     </div>
                 </div>
+
                 <div class="input-group">
                     <label>Live Incident Status</label>
                     <select name="is_blocked" id="is_blocked_select" style="border-left: 4px solid #ef4444;">
@@ -205,6 +239,7 @@
                         <option value="1">SEVERE: Road Blocked / Accident</option>
                     </select>
                 </div>
+
                 <button type="submit">Predict Regional Scenario</button>
             </form>
         </div>
@@ -220,55 +255,124 @@
             </div>
         </div>
         {% endif %}
+
     </div>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
+        // AI State Variables
         var activeSpeed = {% if scenario %}{{ scenario.speed }}{% else %}{{ live.speed }}{% endif %};
         var activeCongestion = "{% if scenario %}{{ scenario.congestion }}{% else %}{{ live.congestion }}{% endif %}";
         var isBlocked = "{% if scenario %}{{ request.form['is_blocked'] }}{% else %}0{% endif %}";
         var condition = document.getElementById("weatherCond") ? document.getElementById("weatherCond").innerText : "";
 
+        // Route Color Logic
         var routeColor = "#10b981"; 
         if (activeCongestion === "Medium") routeColor = "#f59e0b"; 
         if (activeCongestion === "High") routeColor = "#ef4444"; 
         if (isBlocked === "1") routeColor = "#7f1d1d"; 
 
-        var destCoords = [18.535, 73.725]; 
+        // Core Coordinates
+        var destCoords = [18.535, 73.725]; // SIT Lavale
 
         var pgLocations = {
+            // Pashan / Sutarwadi PGs
             "santosh": { coords: [18.544, 73.785], name: "SANTOSH PG ACCOMMODATION" },
             "suman": { coords: [18.542, 73.780], name: "Suman PG for Girls" },
             "kushal": { coords: [18.546, 73.788], name: "Kushal PG" },
             "atharva": { coords: [18.540, 73.782], name: "Atharva PG" },
             "skpg": { coords: [18.543, 73.787], name: "SK's PG" },
+            
+            // Lavale & Nande PGs
             "nova": { coords: [18.540, 73.720], name: "Nova Living" },
             "hillview": { coords: [18.538, 73.730], name: "Hill View Girls Hostel" },
             "magnolia": { coords: [18.542, 73.715], name: "Magnolia Girls Hostel" },
             "palladium": { coords: [18.535, 73.733], name: "The Palladium Premium PG" },
             "ssr": { coords: [18.545, 73.710], name: "SSR PG Gents and Ladies" },
+            
+            // Sus & Baner PGs
             "stanza": { coords: [18.559, 73.786], name: "Stanza Living Haifa House" },
             "malatikunj": { coords: [18.547, 73.745], name: "MALATIKUNJ PG" },
             "express": { coords: [18.549, 73.748], name: "Express PG" },
             "vaishnavi": { coords: [18.545, 73.750], name: "Vaishnavi PG" }
         };
 
+        // Initialize Map
         var map = L.map('trafficMap').setView([18.540, 73.750], 13);
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '© OpenStreetMap' }).addTo(map);
 
         var startMarker, destMarker, trafficRoute;
         var amenityMarkers = []; 
 
-        // Define the three custom Emoji Pins
+        // Map Pins
         var cartIcon = L.divIcon({ html: '🛒', className: 'map-pin', iconSize: [22, 22], iconAnchor: [11, 11] });
         var healthIcon = L.divIcon({ html: '🏥', className: 'map-pin', iconSize: [22, 22], iconAnchor: [11, 11] });
         var pharmaIcon = L.divIcon({ html: '💊', className: 'map-pin', iconSize: [22, 22], iconAnchor: [11, 11] });
 
-        // Function 1: Fetch Groceries
+        // --- BACKGROUND AUTO-UPDATER ---
+        setInterval(() => {
+            fetch('/api/live')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('liveTimeBadge').innerHTML = '<span class="live-dot"></span> ' + data.time_str;
+                    document.getElementById('liveCongestion').innerText = data.congestion;
+                    
+                    var riskEl = document.getElementById('liveRisk');
+                    riskEl.innerText = data.risk;
+                    riskEl.style.color = data.risk === 'Critical' ? '#ef4444' : 'white';
+                    
+                    document.getElementById('liveSpeed').innerText = data.speed + " km/h";
+                    document.getElementById('liveTemp').innerText = data.weather.temp;
+                    document.getElementById('weatherCond').innerText = data.weather.condition;
+                    document.getElementById('liveAqi').innerText = data.weather.real_aqi;
+                    
+                    condition = data.weather.condition;
+
+                    var isViewingScenario = {% if scenario %}true{% else %}false{% endif %};
+                    if (!isViewingScenario) {
+                        activeSpeed = data.speed;
+                        activeCongestion = data.congestion;
+                        
+                        routeColor = "#10b981"; 
+                        if (activeCongestion === "Medium") routeColor = "#f59e0b"; 
+                        if (activeCongestion === "High") routeColor = "#ef4444"; 
+                        
+                        updateMapRoute(); 
+                    }
+                })
+                .catch(err => console.error("Error fetching live updates:", err));
+        }, 60000); 
+
+        // --- CARPOOL MATCHER FUNCTION ---
+        function simulateMatch() {
+            var btn = document.getElementById("matchBtn");
+            btn.innerText = "Connecting...";
+            btn.disabled = true;
+            
+            var names = ["Rahul", "Sneha", "Aditya", "Priya", "Kabir", "Neha", "Rohan", "Anjali", "Siddharth", "Kriti"];
+            var badgeText = document.getElementById("coRiderCount").innerText;
+            var numMatched = parseInt(badgeText.charAt(0)); 
+            
+            setTimeout(() => {
+                var matchedNames = [];
+                for(var i=0; i < numMatched; i++) {
+                    var randomIndex = Math.floor(Math.random() * names.length);
+                    matchedNames.push(names[randomIndex]);
+                    names.splice(randomIndex, 1); 
+                }
+                
+                btn.style.display = "none";
+                var successDiv = document.getElementById("matchSuccess");
+                successDiv.style.display = "block";
+                successDiv.innerHTML = "✅ <b>Match Confirmed!</b><br>You are splitting an Uber with <b>" + matchedNames.join(", ") + "</b>. Meet at the PG gate in 5 mins.";
+            }, 1500);
+        }
+
+        // --- AMENITIES RADAR FUNCTIONS ---
         function fetchNearbyGroceries(lat, lon) {
             document.getElementById('groceryStatus').innerText = "Scanning...";
             document.getElementById('groceryList').innerHTML = "";
-            var url = "https://overpass-api.de/api/interpreter?data=" + encodeURIComponent(`[out:json];node(around:1500,${lat},${lon})[shop~"supermarket|convenience"];out 3;`);
+            var url = "https://overpass-api.de/api/interpreter?data=" + encodeURIComponent(`[out:json];node(around:1500,${lat},${lon})[shop~"supermarket|convenience"];out 5;`);
 
             fetch(url).then(res => res.json()).then(data => {
                 var stores = data.elements;
@@ -291,11 +395,10 @@
             }).catch(() => document.getElementById('groceryStatus').innerText = "Offline");
         }
 
-        // Function 2: Fetch Healthcare
         function fetchNearbyHealthcare(lat, lon) {
             document.getElementById('healthStatus').innerText = "Scanning...";
             document.getElementById('healthList').innerHTML = "";
-            var url = "https://overpass-api.de/api/interpreter?data=" + encodeURIComponent(`[out:json];node(around:1500,${lat},${lon})[amenity~"pharmacy|clinic|hospital|doctors"];out 3;`);
+            var url = "https://overpass-api.de/api/interpreter?data=" + encodeURIComponent(`[out:json];node(around:1500,${lat},${lon})[amenity~"pharmacy|clinic|hospital|doctors"];out 5;`);
 
             fetch(url).then(res => res.json()).then(data => {
                 var places = data.elements;
@@ -319,7 +422,7 @@
             }).catch(() => document.getElementById('healthStatus').innerText = "Offline");
         }
 
-        // Main Update Function
+        // --- CORE MAP & ROUTING FUNCTION ---
         function updateMapRoute() {
             var selectedPgKey = document.getElementById("pgSelector").value;
             var startData = pgLocations[selectedPgKey];
@@ -331,39 +434,67 @@
             amenityMarkers.forEach(m => map.removeLayer(m));
             amenityMarkers = [];
 
+            // Add new origin and destination pins
             startMarker = L.marker(startData.coords).addTo(map).bindPopup("<b>Pickup</b><br>" + startData.name).openPopup();
             destMarker = L.marker(destCoords).addTo(map).bindPopup("<b>Dropoff</b><br>SIT Lavale Campus");
 
-            // Trigger Both Radars Simultaneously!
+            // Trigger Amenities Radars
             fetchNearbyGroceries(startData.coords[0], startData.coords[1]);
             fetchNearbyHealthcare(startData.coords[0], startData.coords[1]);
 
+            // Fetch Route from OSRM
             var osrmUrl = `https://router.project-osrm.org/route/v1/driving/${startData.coords[1]},${startData.coords[0]};${destCoords[1]},${destCoords[0]}?overview=full&geometries=geojson`;
 
             fetch(osrmUrl).then(response => response.json()).then(data => {
                 var actualDistanceKm = data.routes[0].distance / 1000;
+                
+                // 1. Calculate Est. Time
                 var timeDisplay = document.getElementById("travelTimeDisplay");
                 if (activeSpeed <= 2) { timeDisplay.innerText = "99+ mins"; timeDisplay.style.color = "#ef4444"; } 
                 else { timeDisplay.innerText = Math.round((actualDistanceKm / activeSpeed) * 60) + " mins"; timeDisplay.style.color = "white"; }
 
+                // 2. Calculate Ride Pricing (Surge Logic)
                 var surgeMult = (activeCongestion === "High" || isBlocked === "1") ? 1.8 : (activeCongestion === "Medium" ? 1.3 : 1.0);
                 if (condition.includes("Rain") || condition.includes("Thunder")) surgeMult *= 1.2;
 
+                var pUber = Math.max(60, Math.round(actualDistanceKm * 22 * surgeMult));
+                
                 document.getElementById("priceRapido").innerText = "₹" + Math.max(20, Math.round(actualDistanceKm * 10 * surgeMult));
                 document.getElementById("priceOla").innerText = "₹" + Math.max(40, Math.round(actualDistanceKm * 15 * surgeMult));
-                document.getElementById("priceUber").innerText = "₹" + Math.max(60, Math.round(actualDistanceKm * 22 * surgeMult));
+                document.getElementById("priceUber").innerText = "₹" + pUber;
 
                 var isSurge = surgeMult > 1.0;
                 document.querySelectorAll('.surge-badge').forEach(b => b.style.display = isSurge ? "inline-block" : "none");
 
+                // 3. Update Carpool Matcher UI
+                var potentialRiders = Math.floor(Math.random() * 3) + 1; 
+                var totalPeople = potentialRiders + 1; 
+                var splitPrice = Math.round(pUber / totalPeople);
+
+                document.getElementById("carpoolModule").style.display = "block";
+                document.getElementById("coRiderCount").innerText = potentialRiders + (potentialRiders > 1 ? " students nearby" : " student nearby");
+                document.getElementById("origFare").innerText = "₹" + pUber;
+                document.getElementById("splitFare").innerHTML = "₹" + splitPrice + " <span>/ person</span>";
+                
+                document.getElementById("matchBtn").style.display = "block";
+                document.getElementById("matchSuccess").style.display = "none";
+                document.getElementById("matchBtn").innerText = "Find Co-Riders";
+                document.getElementById("matchBtn").disabled = false;
+
+                // 4. Update Deep Links
                 var sLat = startData.coords[0], sLon = startData.coords[1], dLat = destCoords[0], dLon = destCoords[1];
                 document.getElementById("linkUber").href = `https://m.uber.com/ul/?action=setPickup&client_id=my_client_id&pickup[latitude]=${sLat}&pickup[longitude]=${sLon}&dropoff[latitude]=${dLat}&dropoff[longitude]=${dLon}`;
                 document.getElementById("linkOla").href = `https://book.olacabs.com/?lat=${sLat}&lng=${sLon}&drop_lat=${dLat}&drop_lng=${dLon}`;
 
+                // 5. Draw the physical route line on map
                 trafficRoute = L.geoJSON(data.routes[0].geometry, { style: { color: routeColor, weight: 6, opacity: 0.9, lineCap: 'round' } }).addTo(map);
+                
+                // Allow a tiny delay so amenity pins load before zooming the camera
                 setTimeout(() => { map.fitBounds(trafficRoute.getBounds(), {padding: [30, 30]}); }, 300);
             });
         }
+        
+        // Run immediately on page load
         updateMapRoute();
     </script>
 </body>
