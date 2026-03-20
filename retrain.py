@@ -13,7 +13,7 @@ is_weekday = np.random.randint(0, 2, data_size)
 is_steep_route = np.random.randint(0, 2, data_size)
 is_blocked = np.random.choice([0, 1], p=[0.95, 0.05], size=data_size)
 
-# 0 = Sus/Baner, 1 = Lavale Village, 2 = Nande, 3 = Pashan/Sutarwadi
+# 0 = Sus/Baner Corridor, 1 = Lavale Village, 2 = Nande Route, 3 = Pashan/Sutarwadi
 route_region = np.random.choice([0, 1, 2, 3], p=[0.25, 0.25, 0.2, 0.3], size=data_size)
 
 congestion_labels, accident_labels, speeds, aqis = [], [], [], []
@@ -53,11 +53,15 @@ for h, m, w, steep, blocked, region in zip(hours, months, is_weekday, is_steep_r
     else: 
         risk = 'Normal'
         
-    # --- SPEED CAPS ---
-    if cong == 'High': spd = np.random.uniform(3, 10)     
-    elif cong == 'Medium': spd = np.random.uniform(10, 20) 
-    else: spd = np.random.uniform(20, 35)                   
-    if steep == 1: spd *= 0.75 
+    # --- UPGRADED REALISTIC SPEED CAPS ---
+    if cong == 'High': 
+        spd = np.random.uniform(15, 22)     # Bumps speed up to realistically take ~30 mins
+    elif cong == 'Medium': 
+        spd = np.random.uniform(22, 32)     # Steady moving traffic
+    else: 
+        spd = np.random.uniform(32, 45)     # Clear roads                  
+    
+    if steep == 1: spd *= 0.75 # 25% speed penalty for steep gradients
 
     # --- AQI LOGIC ---
     base_aqi = 60
@@ -71,10 +75,11 @@ for h, m, w, steep, blocked, region in zip(hours, months, is_weekday, is_steep_r
     elif cong == 'Medium': aqi = base_aqi + np.random.uniform(25, 50)
     else: aqi = base_aqi + np.random.uniform(0, 15)
 
+    # --- INCIDENT OVERRIDE ---
     if blocked == 1:
         cong = 'High'
         risk = 'Critical'
-        spd = np.random.uniform(0, 2) 
+        spd = np.random.uniform(0, 2) # Standstill traffic during an active block
         aqi += 50 
 
     congestion_labels.append(cong)
@@ -82,20 +87,26 @@ for h, m, w, steep, blocked, region in zip(hours, months, is_weekday, is_steep_r
     speeds.append(round(spd, 1))
     aqis.append(int(aqi))
 
+# Create the Synthetic Dataset
 df = pd.DataFrame({'Hour': hours, 'Month': months, 'Is_Weekday': is_weekday, 
                    'Is_Steep_Route': is_steep_route, 'Is_Blocked': is_blocked, 'Route_Region': route_region,
                    'Congestion': congestion_labels, 'Risk': accident_labels, 'Speed': speeds, 'AQI': aqis})
 
+# The 6 features the AI will learn from
 X = df[['Hour', 'Month', 'Is_Weekday', 'Is_Steep_Route', 'Is_Blocked', 'Route_Region']]
 
-print("Training Master 6-Variable Models...")
+print("Training Master 6-Variable Models (with Recalibrated Speeds)...")
+
+# Train the Random Forest Models
 m_cong = RandomForestClassifier(n_estimators=50, random_state=42).fit(X, df['Congestion'])
 m_risk = RandomForestClassifier(n_estimators=50, random_state=42).fit(X, df['Risk'])
 m_spd = RandomForestRegressor(n_estimators=50, random_state=42).fit(X, df['Speed'])
 m_aqi = RandomForestRegressor(n_estimators=50, random_state=42).fit(X, df['AQI'])
 
+# Save the trained 'brains' to physical files
 with open('congestion_model.pkl', 'wb') as f: pickle.dump(m_cong, f)
 with open('risk_model.pkl', 'wb') as f: pickle.dump(m_risk, f)
 with open('speed_model.pkl', 'wb') as f: pickle.dump(m_spd, f)
 with open('aqi_model.pkl', 'wb') as f: pickle.dump(m_aqi, f)
-print("Success! .pkl files updated for Sus, Lavale, Nande, AND Pashan.")
+
+print("Success! .pkl files updated for Sus, Lavale, Nande, AND Pashan with realistic commute times.")
