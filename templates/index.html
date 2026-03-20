@@ -6,89 +6,7 @@
     <title>SIT Regional Mobility Dashboard</title>
     
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    
-    <style>
-        :root { --primary-color: #2563eb; --primary-hover: #1d4ed8; --background: #f8fafc; --card-bg: #ffffff; --text-main: #1e293b; --text-muted: #64748b; --border-color: #e2e8f0; }
-        body { font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: var(--background); color: var(--text-main); margin: 0; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
-        .dashboard-container { background: var(--card-bg); max-width: 750px; width: 100%; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); overflow: hidden; }
-        
-        .live-banner { background: #0f172a; color: white; padding: 24px; }
-        .live-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #334155; padding-bottom: 12px; margin-bottom: 20px; }
-        .live-header h2 { margin: 0; font-size: 1.4rem; color: #38bdf8; }
-        .live-time { font-weight: 600; color: #cbd5e1; display: flex; align-items: center; gap: 8px; }
-        .live-dot { height: 10px; width: 10px; background-color: #ef4444; border-radius: 50%; display: inline-block; animation: blink 1.5s infinite ease-in-out; }
-        @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
-        .live-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; text-align: center; }
-        .live-stat p { margin: 0; font-size: 0.8rem; color: #94a3b8; text-transform: uppercase; }
-        .live-stat h4 { margin: 5px 0 0; font-size: 1.2rem; color: white; transition: color 0.3s; }
-        .weather-box { background: rgba(255, 255, 255, 0.05); padding: 15px; border-radius: 8px; margin-top: 15px; border: 1px solid #334155; }
-        .weather-box .live-stat p { color: #38bdf8; font-weight: 600; }
-        
-        .pg-control { margin-top: 20px; background: #1e293b; padding: 15px; border-radius: 8px; border: 1px solid #334155; }
-        .pg-control select { width: 100%; padding: 10px; background: #0f172a; color: white; border: 1px solid #38bdf8; border-radius: 6px; font-size: 1rem; cursor: pointer; outline: none; }
-        #trafficMap { height: 320px; width: 100%; border-radius: 8px; margin-top: 20px; border: 1px solid #334155; z-index: 1; }
-        .map-pin { font-size: 14px; text-align: center; line-height: 22px; background: #fff; border-radius: 50%; border: 2px solid #0f172a; box-shadow: 0 2px 4px rgba(0,0,0,0.5); width: 22px !important; height: 22px !important; }
-
-        .ride-comparator { margin-top: 15px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
-        .ride-card { background: rgba(255,255,255,0.05); border: 1px solid #334155; border-radius: 8px; padding: 12px; text-align: center; display: flex; flex-direction: column; justify-content: space-between;}
-        .ride-card.cheapest { border-color: #10b981; background: rgba(16, 185, 129, 0.1); }
-        .ride-logo { font-size: 1.1rem; font-weight: 800; margin-bottom: 5px; }
-        .uber { color: #ffffff; } .ola { color: #84cc16; } .rapido { color: #facc15; }
-        .ride-price { font-size: 1.4rem; font-weight: 700; color: white; margin-bottom: 10px; transition: all 0.3s; }
-        .surge-badge { font-size: 0.7rem; background: #ef4444; color: white; padding: 2px 6px; border-radius: 4px; display: none; margin-bottom: 8px;}
-        .book-btn { padding: 8px; border-radius: 4px; text-decoration: none; font-size: 0.85rem; font-weight: 600; text-align: center; }
-        .btn-uber { background: white; color: black; } .btn-uber:hover { background: #e2e8f0; }
-        .btn-ola { background: #84cc16; color: black; } .btn-ola:hover { background: #65a30d; }
-        .btn-rapido { background: #facc15; color: black; } .btn-rapido:hover { background: #eab308; }
-        
-        .carpool-container { margin-top: 15px; background: rgba(16, 185, 129, 0.05); border: 1px dashed #10b981; border-radius: 8px; padding: 15px; }
-        .carpool-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-        .carpool-header h3 { margin: 0; font-size: 1rem; color: #10b981; }
-        .co-rider-badge { background: #10b981; color: white; padding: 3px 8px; border-radius: 12px; font-size: 0.75rem; font-weight: bold; animation: pulse 2s infinite; }
-        .carpool-content { display: flex; justify-content: space-between; align-items: center; }
-        .split-details p { margin: 0; font-size: 0.8rem; color: #94a3b8; }
-        .split-price { margin: 5px 0 0 0; font-size: 1.5rem; color: white; }
-        .split-price span { font-size: 0.8rem; color: #94a3b8; font-weight: normal; }
-        .match-btn { background: #1e293b; color: white; border: 1px solid #334155; padding: 10px 20px; border-radius: 6px; font-weight: bold; cursor: pointer; transition: 0.2s; }
-        .match-btn:hover { background: #334155; }
-        .match-success { margin-top: 15px; padding: 12px; background: #0f172a; border-radius: 6px; color: #cbd5e1; font-size: 0.85rem; text-align: center; border-left: 4px solid #10b981; }
-        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
-
-        .amenities-container { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 15px; padding-top: 15px; border-top: 1px solid #334155;}
-        .amenity-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-        .amenity-header h3 { margin: 0; font-size: 0.95rem; color: #cbd5e1; }
-        .status-badge { font-size: 0.70rem; background: rgba(16, 185, 129, 0.2); color: #10b981; padding: 3px 8px; border-radius: 12px; }
-        .status-badge.health { background: rgba(244, 63, 94, 0.2); color: #f43f5e; }
-        .amenity-list { display: flex; flex-direction: column; gap: 8px; max-height: 180px; overflow-y: auto; padding-right: 5px; }
-        .amenity-list::-webkit-scrollbar { width: 4px; }
-        .amenity-list::-webkit-scrollbar-thumb { background: #475569; border-radius: 4px; }
-        
-        /* NEW: Hover effects to indicate cards are clickable */
-        .amenity-card { background: #1e293b; border: 1px solid #475569; border-radius: 6px; padding: 10px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: all 0.2s ease;}
-        .amenity-card:hover { background: #334155; transform: translateY(-2px); border-color: #38bdf8; }
-        .amenity-card.health-card:hover { border-color: #f43f5e; }
-        
-        .a-info { display: flex; flex-direction: column; overflow: hidden; padding-right: 10px; }
-        .a-name { color: #38bdf8; font-weight: 700; font-size: 0.85rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .a-name.health { color: #f43f5e; }
-        .a-type { color: #94a3b8; font-size: 0.7rem; text-transform: uppercase; margin-top: 2px;}
-        .a-dist { color: #10b981; font-weight: 700; font-size: 0.8rem; white-space: nowrap; }
-
-        .header { background: #f1f5f9; padding: 20px; text-align: center; border-bottom: 1px solid var(--border-color); }
-        .header h3 { margin: 0; color: var(--text-main); }
-        .form-section { padding: 32px; }
-        .input-group { margin-bottom: 20px; }
-        label { display: block; font-size: 0.9rem; font-weight: 600; margin-bottom: 8px; }
-        input, select { width: 100%; padding: 12px; border: 1px solid var(--border-color); border-radius: 6px; box-sizing: border-box; font-size: 1rem; }
-        input:focus, select:focus { outline: none; border-color: var(--primary-color); box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1); }
-        button { width: 100%; background: var(--primary-color); color: white; border: none; padding: 14px; font-size: 1.05rem; font-weight: 600; border-radius: 6px; cursor: pointer; transition: background 0.2s; }
-        button:hover { background: var(--primary-hover); }
-        .result-section { padding: 32px; border-top: 1px solid var(--border-color); background: #f1f5f9; }
-        .result-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
-        .result-card { background: white; padding: 20px; border-radius: 8px; border: 1px solid var(--border-color); text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
-        .result-title { font-size: 0.85rem; color: var(--text-muted); text-transform: uppercase; margin-bottom: 8px; }
-        .result-value { font-size: 1.4rem; font-weight: 700; color: var(--primary-color); }
-    </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
 
@@ -99,22 +17,30 @@
                 <h2>Master Regional Dashboard</h2>
                 <div class="live-time" id="liveTimeBadge"><span class="live-dot"></span> {{ live.time_str }}</div>
             </div>
+
+            <div id="liveAdminAlert" class="admin-alert-banner" style="display: {% if live.admin_alert.active %}flex{% else %}none{% endif %};">
+                <div class="admin-alert-icon">🚨</div>
+                <div class="admin-alert-text">
+                    <h4>Institution Action Required</h4>
+                    <p id="liveAdminAlertMsg">{{ live.admin_alert.message }}</p>
+                </div>
+            </div>
             
-            <div class="live-grid" style="margin-bottom: 10px;">
-                <div class="live-stat"><p>Traffic Level</p><h4 id="liveCongestion">{{ live.congestion }}</h4></div>
-                <div class="live-stat"><p>Risk Level</p><h4 id="liveRisk" style="color: {% if live.risk == 'Critical' %}#ef4444{% else %}white{% endif %};">{{ live.risk }}</h4></div>
-                <div class="live-stat"><p>Avg Speed</p><h4 id="liveSpeed">{{ live.speed }} km/h</h4></div>
+            <div class="live-grid">
+                <div class="stat-card"><p>Traffic Level</p><h4 id="liveCongestion">{{ live.congestion }}</h4></div>
+                <div class="stat-card"><p>Risk Level</p><h4 id="liveRisk" style="color: {% if live.risk == 'Critical' %}#ef4444{% else %}white{% endif %};">{{ live.risk }}</h4></div>
+                <div class="stat-card"><p>Avg Speed</p><h4 id="liveSpeed">{{ live.speed }} km/h</h4></div>
+                <div class="stat-card"><p>Local Temp</p><h4 id="liveTemp">{{ live.weather.temp }}</h4></div>
+                <div class="stat-card"><p>Condition</p><h4 id="weatherCond">{{ live.weather.condition }}</h4></div>
+                <div class="stat-card"><p>Real AQI</p><h4 id="liveAqi">{{ live.weather.real_aqi }}</h4></div>
             </div>
+        </div>
 
-            <div class="live-grid weather-box">
-                <div class="live-stat"><p>Local Temp</p><h4 id="liveTemp">{{ live.weather.temp }}</h4></div>
-                <div class="live-stat"><p>Condition</p><h4 id="weatherCond">{{ live.weather.condition }}</h4></div>
-                <div class="live-stat"><p>Real AQI</p><h4 id="liveAqi">{{ live.weather.real_aqi }}</h4></div>
-            </div>
-
-            <div class="pg-control" style="display: flex; gap: 15px; align-items: center;">
+        <div class="map-section">
+            
+            <div class="pg-control">
                 <div style="flex-grow: 1;">
-                    <label style="color: #cbd5e1; font-size: 0.85rem; margin-bottom: 5px; display: block;">Select Accommodation (To SIT):</label>
+                    <label>Select Accommodation (To SIT):</label>
                     <select id="pgSelector" onchange="updateMapRoute()">
                         <optgroup label="Pashan & Sutarwadi PGs">
                             <option value="santosh">SANTOSH PG ACCOMMODATION</option>
@@ -138,9 +64,9 @@
                         </optgroup>
                     </select>
                 </div>
-                <div style="background: #0f172a; padding: 10px 15px; border-radius: 6px; border: 1px solid #38bdf8; text-align: center; min-width: 90px;">
-                    <div style="font-size: 0.70rem; color: #94a3b8; text-transform: uppercase; margin-bottom: 3px;">Est. Time</div>
-                    <div id="travelTimeDisplay" style="font-size: 1.3rem; font-weight: 800; color: white;">-- mins</div>
+                <div class="est-time-box">
+                    <p>Est. Time</p>
+                    <h4 id="travelTimeDisplay">-- mins</h4>
                 </div>
             </div>
 
@@ -188,14 +114,13 @@
             <div id="trafficMap"></div>
         </div>
 
-        <div class="header"><h3>Test Custom Scenarios</h3></div>
-        
         <div class="form-section">
+            <h3>Test Custom Scenarios</h3>
             <form method="POST">
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
                     <div class="input-group">
                         <label>Time of Day (0-23)</label>
-                        <input type="number" name="hour" required min="0" max="23" placeholder="e.g., 18">
+                        <input type="number" name="hour" required min="0" max="23" placeholder="e.g., 8">
                     </div>
                     <div class="input-group">
                         <label>Month (1-12)</label>
@@ -232,7 +157,7 @@
 
                 <div class="input-group">
                     <label>Live Incident Status</label>
-                    <select name="is_blocked" id="is_blocked_select" style="border-left: 4px solid #ef4444;">
+                    <select name="is_blocked" id="is_blocked_select">
                         <option value="0">Normal (No Blockages)</option>
                         <option value="1">SEVERE: Road Blocked / Accident</option>
                     </select>
@@ -240,38 +165,42 @@
 
                 <button type="submit">Predict Regional Scenario</button>
             </form>
-        </div>
 
-        {% if scenario %}
-        <div class="result-section">
-            <h3 style="margin-top: 0; color: var(--text-main); margin-bottom: 20px;">Scenario Prediction</h3>
-            <div class="result-grid">
-                <div class="result-card"><div class="result-title">Traffic Volume</div><div class="result-value">{{ scenario.congestion }}</div></div>
-                <div class="result-card"><div class="result-title">Accident Risk</div><div class="result-value" style="color: {% if scenario.risk == 'Critical' %}#ef4444{% else %}var(--primary-color){% endif %};">{{ scenario.risk }}</div></div>
-                <div class="result-card"><div class="result-title">Average Speed</div><div class="result-value">{{ scenario.speed }} km/h</div></div>
-                <div class="result-card"><div class="result-title">Est. AQI (PM2.5)</div><div class="result-value">{{ scenario.aqi }}</div></div>
+            {% if scenario %}
+            <div class="scenario-result-box">
+                {% if scenario.admin_alert.active %}
+                <div class="admin-alert-banner">
+                    <div class="admin-alert-icon">🚨</div>
+                    <div class="admin-alert-text">
+                        <h4>Institution Action Required</h4>
+                        <p>{{ scenario.admin_alert.message }}</p>
+                    </div>
+                </div>
+                {% endif %}
+
+                <div class="result-item"><span class="result-label">Traffic Volume</span><span class="result-value">{{ scenario.congestion }}</span></div>
+                <div class="result-item"><span class="result-label">Accident Risk</span><span class="result-value" style="color: {% if scenario.risk == 'Critical' %}#ef4444{% else %}var(--primary){% endif %};">{{ scenario.risk }}</span></div>
+                <div class="result-item"><span class="result-label">Average Speed</span><span class="result-value">{{ scenario.speed }} km/h</span></div>
+                <div class="result-item"><span class="result-label">Est. AQI (PM2.5)</span><span class="result-value">{{ scenario.aqi }}</span></div>
             </div>
+            {% endif %}
         </div>
-        {% endif %}
 
     </div>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
-        // AI State Variables
         var activeSpeed = {% if scenario %}{{ scenario.speed }}{% else %}{{ live.speed }}{% endif %};
         var activeCongestion = "{% if scenario %}{{ scenario.congestion }}{% else %}{{ live.congestion }}{% endif %}";
         var isBlocked = "{% if scenario %}{{ request.form['is_blocked'] }}{% else %}0{% endif %}";
         var condition = document.getElementById("weatherCond") ? document.getElementById("weatherCond").innerText : "";
 
-        // Route Color Logic
         var routeColor = "#10b981"; 
         if (activeCongestion === "Medium") routeColor = "#f59e0b"; 
         if (activeCongestion === "High") routeColor = "#ef4444"; 
         if (isBlocked === "1") routeColor = "#7f1d1d"; 
 
-        // Core Coordinates
-        var destCoords = [18.535, 73.725]; // SIT Lavale
+        var destCoords = [18.535, 73.725]; 
 
         var pgLocations = {
             "santosh": { coords: [18.544, 73.785], name: "SANTOSH PG ACCOMMODATION" },
@@ -290,19 +219,17 @@
             "vaishnavi": { coords: [18.545, 73.750], name: "Vaishnavi PG" }
         };
 
-        // Initialize Map
         var map = L.map('trafficMap').setView([18.540, 73.750], 13);
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '© OpenStreetMap' }).addTo(map);
 
         var startMarker, destMarker, trafficRoute;
         var amenityMarkers = []; 
-        var amenityRouteLayer = null; // NEW: Track the sub-route to the store/clinic
+        var amenityRouteLayer = null; 
 
         var cartIcon = L.divIcon({ html: '🛒', className: 'map-pin', iconSize: [22, 22], iconAnchor: [11, 11] });
         var healthIcon = L.divIcon({ html: '🏥', className: 'map-pin', iconSize: [22, 22], iconAnchor: [11, 11] });
         var pharmaIcon = L.divIcon({ html: '💊', className: 'map-pin', iconSize: [22, 22], iconAnchor: [11, 11] });
 
-        // --- BACKGROUND AUTO-UPDATER ---
         setInterval(() => {
             fetch('/api/live')
                 .then(response => response.json())
@@ -318,6 +245,14 @@
                     document.getElementById('liveTemp').innerText = data.weather.temp;
                     document.getElementById('weatherCond').innerText = data.weather.condition;
                     document.getElementById('liveAqi').innerText = data.weather.real_aqi;
+
+                    var alertBox = document.getElementById('liveAdminAlert');
+                    if (data.admin_alert.active) {
+                        alertBox.style.display = 'flex';
+                        document.getElementById('liveAdminAlertMsg').innerText = data.admin_alert.message;
+                    } else {
+                        alertBox.style.display = 'none';
+                    }
                     
                     condition = data.weather.condition;
 
@@ -336,7 +271,6 @@
                 .catch(err => console.error("Error fetching live updates:", err));
         }, 60000); 
 
-        // --- CARPOOL MATCHER FUNCTION ---
         function simulateMatch() {
             var btn = document.getElementById("matchBtn");
             btn.innerText = "Connecting...";
@@ -361,39 +295,30 @@
             }, 1500);
         }
 
-        // --- NEW: INTERACTIVE AMENITY ROUTING FUNCTION ---
         function drawRouteToAmenity(destLat, destLon, isHealth) {
             var selectedPgKey = document.getElementById("pgSelector").value;
             var startData = pgLocations[selectedPgKey];
             var startLat = startData.coords[0];
             var startLon = startData.coords[1];
 
-            // Clear any previously drawn amenity route
-            if (amenityRouteLayer) {
-                map.removeLayer(amenityRouteLayer);
-            }
+            if (amenityRouteLayer) { map.removeLayer(amenityRouteLayer); }
 
-            // Fetch the physical road path to the store/clinic
             var osrmUrl = `https://router.project-osrm.org/route/v1/driving/${startLon},${startLat};${destLon},${destLat}?overview=full&geometries=geojson`;
 
             fetch(osrmUrl)
                 .then(response => response.json())
                 .then(data => {
                     var routeGeoJSON = data.routes[0].geometry;
-                    
-                    // Choose a distinct dashed color: Cyan for Groceries, Pink for Health
                     var pathColor = isHealth ? "#f43f5e" : "#06b6d4";
 
                     amenityRouteLayer = L.geoJSON(routeGeoJSON, { 
                         style: { color: pathColor, weight: 5, opacity: 0.9, dashArray: '10, 10', lineCap: 'round' } 
                     }).addTo(map);
 
-                    // Smoothly pull the camera to fit this new specific route
                     map.fitBounds(amenityRouteLayer.getBounds(), {padding: [40, 40]});
                 });
         }
 
-        // --- AMENITIES RADAR FUNCTIONS ---
         function fetchNearbyGroceries(lat, lon) {
             document.getElementById('groceryStatus').innerText = "Scanning...";
             document.getElementById('groceryList').innerHTML = "";
@@ -413,13 +338,12 @@
 
                     var card = document.createElement('div'); 
                     card.className = "amenity-card";
-                    // NEW: Add the onClick event to trigger the route drawing!
                     card.onclick = () => drawRouteToAmenity(store.lat, store.lon, false);
                     card.innerHTML = `<div class="a-info"><div class="a-name" title="${name}">${name}</div><div class="a-type">${type}</div></div><div class="a-dist">🚶 ${distText}</div>`;
                     container.appendChild(card);
 
                     var m = L.marker([store.lat, store.lon], {icon: cartIcon}).addTo(map).bindPopup(`<b>${name}</b><br>${distText} away`);
-                    m.on('click', () => drawRouteToAmenity(store.lat, store.lon, false)); // Map pins are also clickable!
+                    m.on('click', () => drawRouteToAmenity(store.lat, store.lon, false)); 
                     amenityMarkers.push(m);
                 });
             }).catch(() => document.getElementById('groceryStatus').innerText = "Offline");
@@ -445,40 +369,34 @@
                     
                     var card = document.createElement('div'); 
                     card.className = "amenity-card health-card";
-                    // NEW: Add the onClick event to trigger the route drawing!
                     card.onclick = () => drawRouteToAmenity(place.lat, place.lon, true);
                     card.innerHTML = `<div class="a-info"><div class="a-name health" title="${name}">${name}</div><div class="a-type">${type}</div></div><div class="a-dist">🚶 ${distText}</div>`;
                     container.appendChild(card);
 
                     var m = L.marker([place.lat, place.lon], {icon: isPharma ? pharmaIcon : healthIcon}).addTo(map).bindPopup(`<b>${name}</b><br>${distText} away`);
-                    m.on('click', () => drawRouteToAmenity(place.lat, place.lon, true)); // Map pins are also clickable!
+                    m.on('click', () => drawRouteToAmenity(place.lat, place.lon, true)); 
                     amenityMarkers.push(m);
                 });
             }).catch(() => document.getElementById('healthStatus').innerText = "Offline");
         }
 
-        // --- CORE MAP & ROUTING FUNCTION ---
         function updateMapRoute() {
             var selectedPgKey = document.getElementById("pgSelector").value;
             var startData = pgLocations[selectedPgKey];
 
-            // Clear Old Map Data
             if (startMarker) map.removeLayer(startMarker);
             if (destMarker) map.removeLayer(destMarker);
             if (trafficRoute) map.removeLayer(trafficRoute);
-            if (amenityRouteLayer) map.removeLayer(amenityRouteLayer); // Clear active amenity route
+            if (amenityRouteLayer) map.removeLayer(amenityRouteLayer); 
             amenityMarkers.forEach(m => map.removeLayer(m));
             amenityMarkers = [];
 
-            // Add new origin and destination pins
             startMarker = L.marker(startData.coords).addTo(map).bindPopup("<b>Pickup</b><br>" + startData.name).openPopup();
             destMarker = L.marker(destCoords).addTo(map).bindPopup("<b>Dropoff</b><br>SIT Lavale Campus");
 
-            // Trigger Amenities Radars
             fetchNearbyGroceries(startData.coords[0], startData.coords[1]);
             fetchNearbyHealthcare(startData.coords[0], startData.coords[1]);
 
-            // Fetch Main Campus Route
             var osrmUrl = `https://router.project-osrm.org/route/v1/driving/${startData.coords[1]},${startData.coords[0]};${destCoords[1]},${destCoords[0]}?overview=full&geometries=geojson`;
 
             fetch(osrmUrl).then(response => response.json()).then(data => {
