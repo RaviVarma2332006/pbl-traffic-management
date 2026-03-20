@@ -1,4 +1,4 @@
-from flask import Flask, request, render_template
+from flask import Flask, request, render_template, jsonify
 import pickle
 from datetime import datetime
 import requests 
@@ -12,7 +12,7 @@ with open('aqi_model.pkl', 'rb') as f: m_aqi = pickle.load(f)
 
 def get_realtime_weather():
     try:
-        lat, lon = "18.548", "73.744" # Central point for area
+        lat, lon = "18.548", "73.744" 
         weather_url = f"https://api.open-meteo.com/v1/forecast?latitude={lat}&longitude={lon}&current=temperature_2m,weather_code"
         aqi_url = f"https://air-quality-api.open-meteo.com/v1/air-quality?latitude={lat}&longitude={lon}&current=us_aqi"
         
@@ -63,18 +63,37 @@ def find_best_time(start_hour, month, is_weekday, is_steep, is_blocked, route_re
         disp_h = best_h if best_h <= 12 and best_h != 0 else (best_h-12 if best_h != 0 else 12)
         return f"Leave at {disp_h}:00 {'AM' if best_h < 12 else 'PM'} (No Wait)" if best_offset == 0 else f"Wait 1 Hr (Leave at {disp_h}:00 {'AM' if best_h < 12 else 'PM'})"
 
+# --- ADMIN ALERT LOGIC ---
+def check_admin_alert(hour, congestion, risk):
+    # Morning rush is between 7 AM and 10 AM
+    if (7 <= hour <= 10) and congestion == 'High' and risk == 'Critical':
+        return {
+            "active": True, 
+            "message": "SEVERE GRIDLOCK & CRITICAL ACCIDENT RISK DETECTED. Recommendation: Shift morning lectures to online mode or suspend attendance penalties to ensure student safety."
+        }
+    return {"active": False, "message": ""}
+
 def get_live_predictions():
     now = datetime.now()
     scenario_live = [[now.hour, now.month, 1 if now.weekday() < 5 else 0, 0, 0, 0]]
+    
+    cong = m_cong.predict(scenario_live)[0]
+    risk = m_risk.predict(scenario_live)[0]
+    
     weather_data = get_realtime_weather()
     return {
         'time_str': now.strftime("%I:%M %p, %b %d"),
-        'congestion': m_cong.predict(scenario_live)[0],
-        'risk': m_risk.predict(scenario_live)[0],
+        'congestion': cong,
+        'risk': risk,
         'speed': round(m_spd.predict(scenario_live)[0], 1),
         'best_time': find_best_time(now.hour, now.month, 1 if now.weekday() < 5 else 0, 0, 0, 0, is_live=True, current_minute=now.minute),
-        'weather': weather_data
+        'weather': weather_data,
+        'admin_alert': check_admin_alert(now.hour, cong, risk) # Injects alert status
     }
+
+@app.route('/api/live')
+def api_live():
+    return jsonify(get_live_predictions())
 
 @app.route('/', methods=['GET', 'POST'])
 def home():
@@ -84,12 +103,17 @@ def home():
         steep, blk, region = int(request.form['is_steep']), int(request.form['is_blocked']), int(request.form['route_region'])
 
         scenario = [[h, m, w, steep, blk, region]]
+        
+        s_cong = m_cong.predict(scenario)[0]
+        s_risk = m_risk.predict(scenario)[0]
+        
         scenario_data = {
-            'congestion': m_cong.predict(scenario)[0],
-            'risk': m_risk.predict(scenario)[0],
+            'congestion': s_cong,
+            'risk': s_risk,
             'speed': round(m_spd.predict(scenario)[0], 1),
             'aqi': int(m_aqi.predict(scenario)[0]),
-            'best_time': find_best_time(h, m, w, steep, blk, region, is_live=False)
+            'best_time': find_best_time(h, m, w, steep, blk, region, is_live=False),
+            'admin_alert': check_admin_alert(h, s_cong, s_risk) # Injects alert status
         }
         return render_template('index.html', live=live_data, scenario=scenario_data)
     
